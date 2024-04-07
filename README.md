@@ -1,6 +1,7 @@
 # SMARTomato
 ## How to run this project
-1. Download Requirement: npm ,Gradle 8.3, JAVA 20, Android Debug Bridge (adb)
+Download Requirement: npm ,Gradle 8.3, JAVA 20, Android Debug Bridge (adb)
+
 Backend:
 1. Open the backend folder and open in terminal
 2. Run ```npm start``` (You might want to run ```npm install --force``` if something not install correctly)
