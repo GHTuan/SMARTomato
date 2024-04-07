@@ -14,7 +14,7 @@ Frontend:
 3. If you are runing the project on an Android Virtual Device, run ```npx react-native run-android```
 4. Now you will be able to view the signin and signup (Network Error)
 
-If you are facing the Network Error type the below step
+If you are facing the Network Error try the below step
 
 Connecting the Frontend Server to the Backend Server:
 1. Open a new terminal and run ```adb devices```
