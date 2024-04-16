@@ -72,7 +72,7 @@ const LoginScreen = ({navigation}) => {
             console.log(stores)
           });
           
-          navigation.replace('DrawerNavigationRoutes');
+          navigation.replace('TabNavigationRoutes');
         } else {
           setErrortext(responseJson.error);
           console.log('Please check your email id or password');

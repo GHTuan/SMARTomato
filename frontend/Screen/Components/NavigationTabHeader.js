@@ -5,14 +5,14 @@
 import React from 'react';
 import {View, Image, TouchableOpacity} from 'react-native';
 
-const NavigationDrawerHeader = (props) => {
-  const toggleDrawer = () => {
-    props.navigationProps.toggleDrawer();
+const NavigationTabHeader = (props) => {
+  const toggleTab = () => {
+    props.navigationProps.toggleTab();
   };
 
   return (
     <View style={{flexDirection: 'row'}}>
-      <TouchableOpacity onPress={toggleDrawer}>
+      <TouchableOpacity onPress={toggleTab}>
         <Image
           source={{
             uri:
@@ -24,4 +24,4 @@ const NavigationDrawerHeader = (props) => {
     </View>
   );
 };
-export default NavigationDrawerHeader;
+export default NavigationTabHeader;
