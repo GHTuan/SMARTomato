@@ -6,16 +6,17 @@ import React from 'react';
 
 // Import Navigators from React Navigation
 import {createStackNavigator} from '@react-navigation/stack';
-import {createBottomTabNavigator, createTabNavigator} from '@react-navigation/bottom-tabs';
+import {
+  createBottomTabNavigator,
+  createTabNavigator,
+} from '@react-navigation/bottom-tabs';
 
 // Import Screens
-import HomeScreen from './TabScreens/HomeScreen';
+import HomeScreen from './TabScreens/Home/HomeScreen';
 import SettingsScreen from './TabScreens/SettingsScreen';
 import UserSettingsScreen from './TabScreens/UserSettingsScreen';
 import StatisticsScreen from './TabScreens/StatisticsScreen';
 import NotificationsScreen from './TabScreens/NotificationsScreen';
-
-
 
 import CustomSidebarMenu from './Components/CustomSidebarMenu';
 // import NavigationTabHeader from './Components/NavigationTabHeader';
@@ -115,7 +116,6 @@ const StatisticsScreenStack = ({navigation}) => {
   );
 };
 
-
 const NotificationsScreenStack = ({navigation}) => {
   return (
     <Stack.Navigator
@@ -140,19 +140,19 @@ const NotificationsScreenStack = ({navigation}) => {
   );
 };
 
-const TabNavigationRoutes = (props) => {
+const TabNavigationRoutes = props => {
   return (
     <Tab.Navigator
-    tabContentOptions={{
-      activeTintColor: '#cee1f2',
-      color: '#cee1f2',
-      itemStyle: {marginVertical: 5, color: 'white'},
-      labelStyle: {
-        color: '#d8d8d8',
-      },
-    }}
-    screenOptions={{headerShown: false}}
-    tabContent={CustomSidebarMenu}>
+      tabContentOptions={{
+        activeTintColor: '#cee1f2',
+        color: '#cee1f2',
+        itemStyle: {marginVertical: 5, color: 'white'},
+        labelStyle: {
+          color: '#d8d8d8',
+        },
+      }}
+      screenOptions={{headerShown: false}}
+      tabContent={CustomSidebarMenu}>
       <Tab.Screen
         name="Statistics"
         options={{tabLabel: 'StatisticsScreen'}}
@@ -178,7 +178,6 @@ const TabNavigationRoutes = (props) => {
         options={{tabLabel: 'UserScreen'}}
         component={UserSettingsScreenStack}
       />
-
     </Tab.Navigator>
   );
 };
