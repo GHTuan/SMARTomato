@@ -1,6 +1,6 @@
 import React, {Children} from 'react';
 import {View} from 'react-native';
-import {Image, XStack, YStack, Text} from 'tamagui';
+import {Image, XStack, YStack, Text, Button} from 'tamagui';
 
 function Card({name, currentValue, children, icon}) {
   return (
@@ -15,9 +15,9 @@ function Card({name, currentValue, children, icon}) {
       backgroundColor={'white'}>
       <XStack justifyContent="space-between">
         <Text>{currentValue}</Text>
-        <Text color={'green'} fontSize={10}>
+        <Button color={'green'} fontSize={10} unstyled={true}>
           Remeasure
-        </Text>
+        </Button>
       </XStack>
       <View>{children}</View>
       <XStack justifyContent="space-between" alignItems="center">
