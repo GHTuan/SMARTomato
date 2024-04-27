@@ -3,51 +3,30 @@
 
 // Import React and Component
 import React from 'react';
-import {View, Text, SafeAreaView,Button, Alert} from 'react-native';
+import {SafeAreaView, Button, Alert} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
+import {View, Text, YStack} from 'tamagui';
 
-
-const UserSettingsScreen = (props) => {
+const UserSettingsScreen = props => {
   return (
     <SafeAreaView style={{flex: 1}}>
-      <View style={{flex: 1, padding: 16}}>
-        <View
-          style={{
-            flex: 1,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
-          <Text
-            style={{
-              fontSize: 20,
-              textAlign: 'center',
-              marginBottom: 16,
-            }}>
-            Example of Splash, Login and Sign Up in React Native
-            {'\n\n'}
-            This is the User Screen
-          </Text>
+      <View backgroundColor={'green'} height={100} width={'100%'}></View>
+      <YStack>
+        <Text>Account</Text>
+        <View>
+          <Text>Change password</Text>
+          <Text>Change email</Text>
+          <Text>Change username</Text>
         </View>
-        <Text
-          style={{
-            fontSize: 18,
-            textAlign: 'center',
-            color: 'grey',
-          }}>
-          Splash, Login and Register Example{'\n'}React Native
-        </Text>
-        <Text
-          style={{
-            fontSize: 16,
-            textAlign: 'center',
-            color: 'grey',
-          }}>
-          www.aboutreact.com
-        </Text>
-      </View>
+        <Text>Notification</Text>
+        <View>
+          <Text>Turn on Notification</Text>
+        </View>
+        <Text>About</Text>
+        <View></View>
+      </YStack>
       <Button
         onPress={() => {
-          
           Alert.alert(
             'Logout',
             'Are you sure? You want to logout?',
