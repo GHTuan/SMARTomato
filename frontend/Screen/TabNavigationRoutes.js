@@ -17,6 +17,7 @@ import SettingsScreen from './TabScreens/SettingsScreen';
 import UserSettingsScreen from './TabScreens/UserSettingsScreen';
 import StatisticsScreen from './TabScreens/StatisticsScreen';
 import NotificationsScreen from './TabScreens/NotificationsScreen';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import DeviceScreen from './TabScreens/Device/DeviceScreen';
 
 import CustomSidebarMenu from './Components/CustomSidebarMenu';
@@ -31,16 +32,7 @@ const HomeScreenStack = ({navigation}) => {
       <Stack.Screen
         name="HomeScreen"
         component={HomeScreen}
-        options={{
-          title: 'Home', //Set Header Title
-          headerStyle: {
-            backgroundColor: '#307ecc', //Set Header color
-          },
-          headerTintColor: '#fff', //Set Header text color
-          headerTitleStyle: {
-            fontWeight: 'bold', //Set Header text style
-          },
-        }}
+        options={{headerShown: false}}
       />
     </Stack.Navigator>
   );
@@ -50,13 +42,7 @@ const SettingScreenStack = ({navigation}) => {
     <Stack.Navigator
       initialRouteName="SettingsScreen"
       screenOptions={{
-        headerStyle: {
-          backgroundColor: '#307ecc', //Set Header color
-        },
-        headerTintColor: '#fff', //Set Header text color
-        headerTitleStyle: {
-          fontWeight: 'bold', //Set Header text style
-        },
+        headerShown: false,
       }}>
       <Stack.Screen
         name="SettingsScreen"
@@ -74,13 +60,7 @@ const UserSettingsScreenStack = ({navigation}) => {
     <Stack.Navigator
       initialRouteName="UserSettingsScreen"
       screenOptions={{
-        headerStyle: {
-          backgroundColor: '#307ecc', //Set Header color
-        },
-        headerTintColor: '#fff', //Set Header text color
-        headerTitleStyle: {
-          fontWeight: 'bold', //Set Header text style
-        },
+        headerShown: false,
       }}>
       <Stack.Screen
         name="UserSettingsScreen"
@@ -98,13 +78,7 @@ const StatisticsScreenStack = ({navigation}) => {
     <Stack.Navigator
       initialRouteName="StatisticsScreen"
       screenOptions={{
-        headerStyle: {
-          backgroundColor: '#307ecc', //Set Header color
-        },
-        headerTintColor: '#fff', //Set Header text color
-        headerTitleStyle: {
-          fontWeight: 'bold', //Set Header text style
-        },
+        headerShown: false,
       }}>
       <Stack.Screen
         name="StatisticsScreen"
@@ -121,21 +95,13 @@ const NotificationsScreenStack = ({navigation}) => {
   return (
     <Stack.Navigator
       initialRouteName="NotificationsScreen"
-      screenOptions={{
-        headerStyle: {
-          backgroundColor: '#307ecc', //Set Header color
-        },
-        headerTintColor: '#fff', //Set Header text color
-        headerTitleStyle: {
-          fontWeight: 'bold', //Set Header text style
-        },
-      }}>
+      screenOptions={{headerShown: false}}>
       <Stack.Screen
         name="NotificationsScreen"
         component={NotificationsScreen}
-        options={{
-          title: 'Notifications', //Set Header Title
-        }}
+        // options={{
+        //   title: 'Notifications', //Set Header Title
+        // }}
       />
     </Stack.Navigator>
   );
@@ -178,8 +144,32 @@ const TabNavigationRoutes = props => {
           color: '#d8d8d8',
         },
       }}
-      screenOptions={{headerShown: false}}
-      tabContent={CustomSidebarMenu}>
+      screenOptions={({route}) => ({
+        tabBarIcon: ({focused, color, size}) => {
+          let iconName;
+
+          if (route.name === 'Home') {
+            iconName = focused ? 'home' : 'home-outline';
+          } else if (route.name === 'Settings') {
+            iconName = focused ? 'settings' : 'settings-outline';
+          } else if (route.name === 'Notification') {
+            iconName = focused ? 'notifications' : 'notifications-outline';
+          } else if (route.name === 'User') {
+            iconName = focused ? 'person' : 'person-outline';
+          } else if (route.name === 'Statistics') {
+            iconName = focused ? 'stats-chart' : 'stats-chart-outline';
+          }
+
+          // You can return any component that you like here!
+          return <Ionicons name={iconName} size={size} color={color} />;
+        },
+        tabBarActiveTintColor: 'green',
+        tabBarInactiveTintColor: 'gray',
+        headerShown: false,
+        tabBarShowLabel: false,
+      })}
+      // tabContent={CustomSidebarMenu}
+    >
       <Tab.Screen
         name="Statistics"
         options={{tabLabel: 'StatisticsScreen'}}
@@ -196,8 +186,8 @@ const TabNavigationRoutes = props => {
         component={HomeScreenStack}
       />
       <Tab.Screen
-        name="Setting"
-        options={{tabLabel: 'Setting Screen'}}
+        name="Settings"
+        options={{tabLabel: 'Settings Screen'}}
         component={SettingScreenStack}
       />
       <Tab.Screen
