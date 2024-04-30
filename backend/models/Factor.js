@@ -12,7 +12,7 @@ const factorSchema = new mongoose.Schema({
     curmode: {
         type: String,
         required: true,
-        default: "off"
+        default: "Manual"
     },
     lowbound: {
         type: Number,
@@ -21,6 +21,10 @@ const factorSchema = new mongoose.Schema({
     upbound: {
         type: Number,
         required: true
+    },
+    devicestt: {
+        type: Boolean,
+        default: false
     },
 })
 
