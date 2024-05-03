@@ -42,43 +42,46 @@ const LoginScreen = ({navigation}) => {
       method: 'POST',
       headers: {
         //Header Defination
-        "Content-Type":"application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         email: userEmail,
         password: userPassword,
       }),
     })
-      .then((response) => response.json())
-      .then((responseJson) => {
+      .then(response => response.json())
+      .then(responseJson => {
         //Hide Loader
         setLoading(false);
         // If server response message same as Data Matched
         if (responseJson.token) {
           let multi_set_pairs = [
             ['token', JSON.stringify(responseJson.token)],
-            ['userinfo', JSON.stringify(responseJson.user)],
+            ['userinfo', responseJson.user._id],
           ];
           let multi_merge_pairs = [
             ['token', JSON.stringify(responseJson.token)],
-            ['userinfo', JSON.stringify(responseJson.user)],
+            ['userinfo', responseJson.user._id],
           ];
-          
+
           AsyncStorage.multiSet(multi_set_pairs, err => {
             AsyncStorage.multiMerge(multi_merge_pairs);
           });
           // example of getting an item in storage
           AsyncStorage.getItem('token', (err, stores) => {
-            console.log(stores)
+            console.log(stores);
           });
-          
+          AsyncStorage.getItem('userinfo', (err, stores) => {
+            console.log(stores);
+          });
+
           navigation.replace('TabNavigationRoutes');
         } else {
           setErrortext(responseJson.error);
           console.log('Please check your email id or password');
         }
       })
-      .catch((error) => {
+      .catch(error => {
         //Hide Loader
         setLoading(false);
         console.error(error);
@@ -111,17 +114,14 @@ const LoginScreen = ({navigation}) => {
             <View style={styles.SectionStyle}>
               <TextInput
                 style={styles.inputStyle}
-                onChangeText={(UserEmail) =>
-                  setUserEmail(UserEmail)
-                }
+                onChangeText={UserEmail => setUserEmail(UserEmail)}
                 placeholder="Enter Email" //dummy@abc.com
                 placeholderTextColor="#8b9cb5"
                 autoCapitalize="none"
                 keyboardType="email-address"
                 returnKeyType="next"
                 onSubmitEditing={() =>
-                  passwordInputRef.current &&
-                  passwordInputRef.current.focus()
+                  passwordInputRef.current && passwordInputRef.current.focus()
                 }
                 underlineColorAndroid="#f000"
                 blurOnSubmit={false}
@@ -130,9 +130,7 @@ const LoginScreen = ({navigation}) => {
             <View style={styles.SectionStyle}>
               <TextInput
                 style={styles.inputStyle}
-                onChangeText={(UserPassword) =>
-                  setUserPassword(UserPassword)
-                }
+                onChangeText={UserPassword => setUserPassword(UserPassword)}
                 placeholder="Enter Password" //12345
                 placeholderTextColor="#8b9cb5"
                 keyboardType="default"
@@ -145,9 +143,7 @@ const LoginScreen = ({navigation}) => {
               />
             </View>
             {errortext != '' ? (
-              <Text style={styles.errorTextStyle}>
-                {errortext}
-              </Text>
+              <Text style={styles.errorTextStyle}>{errortext}</Text>
             ) : null}
             <TouchableOpacity
               style={styles.buttonStyle}

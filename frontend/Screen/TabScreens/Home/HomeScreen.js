@@ -2,36 +2,32 @@
 // https://aboutreact.com/react-native-login-and-signup/
 
 // Import React and Component
-import React from 'react';
-import {SafeAreaView, ImageBackground} from 'react-native';
-import Card from './Components/Card';
 import {
-  Button,
-  H1,
-  H2,
+  CloudSun,
+  Droplet,
+  Droplets,
+  Fan,
+  Lightbulb,
+  Sun,
+  ThermometerSun,
+} from '@tamagui/lucide-icons';
+import React from 'react';
+import {ImageBackground} from 'react-native';
+import {
   H3,
   H4,
   Main,
-  YStack,
-  Text,
-  XStack,
-  H5,
   ScrollView,
   Switch,
+  Text,
   View,
+  XStack,
+  YStack,
 } from 'tamagui';
-import {
-  Droplets,
-  Sun,
-  ThermometerSun,
-  Droplet,
-  Fan,
-  Lightbulb,
-  CloudSun,
-} from '@tamagui/lucide-icons';
+import {tw} from '../../../tailwind';
+import Card from './Components/Card';
 import DeviceControlCard from './Components/DeviceControlCard';
 import {LineGraph} from './Components/LineGraph';
-import {tw} from '../../../tailwind';
 
 const HomeScreen = () => {
   return (
