@@ -11,7 +11,7 @@ import {
   Sun,
   ThermometerSun,
 } from '@tamagui/lucide-icons';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {ImageBackground} from 'react-native';
 import {
   H3,
@@ -33,6 +33,23 @@ import EvironmentFactorsSection from './EvironmentFactorsSection';
 const HomeScreen = () => {
   const [systemMode, setSystemMode] = useState('Auto');
 
+  useEffect(() => {
+    const fetchFactorModes = async () => {
+      try {
+        const response = await fetch('http://localhost:4000/systemmode', {
+          method: 'GET',
+        });
+        if (!response.ok) {
+          throw new Error('Failed to fetch factor modes');
+        }
+        const data = await response.json();
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchFactorModes();
+  }, []);
+
   const toggleSwitch = async () => {
     console.log(systemMode);
     const newMode = systemMode === 'Auto' ? 'Manual' : 'Auto';
@@ -53,11 +70,9 @@ const HomeScreen = () => {
         console.log('System mode updated successfully');
       } catch (error) {
         console.error('Error updating system mode:', error);
-        // Revert system mode if there's an error
         setSystemMode(prev => (prev === 'Auto' ? 'Manual' : 'Auto'));
       }
     }
-    // setSystemMode(prev => (prev === 'Auto' ? 'Manual' : 'Auto'));
   };
 
   return (
@@ -107,7 +122,7 @@ const HomeScreen = () => {
         </YStack>
       </ImageBackground>
       <Main paddingHorizontal={25} paddingVertical={10}>
-        <EvironmentFactorsSection />
+        <EvironmentFactorsSection systemMode={systemMode} />
         <YStack paddingVertical={10}>
           <H4>Device controls</H4>
           <XStack flexWrap="wrap" justifyContent="space-between" paddingTop={5}>

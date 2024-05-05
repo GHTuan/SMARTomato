@@ -1,11 +1,12 @@
-import React, {useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {H3, XStack, YStack} from 'tamagui';
 import Card from './Components/Card';
 import {LineGraph} from './Components/LineGraph';
 import {Droplet, Droplets, Sun, ThermometerSun} from '@tamagui/lucide-icons';
 import {tw} from '../../../tailwind';
+import {useFocusEffect} from '@react-navigation/native';
 
-function EvironmentFactorsSection() {
+function EvironmentFactorsSection({systemMode}) {
   const getIcon = name => {
     switch (name) {
       case 'Humidity':
@@ -23,30 +24,66 @@ function EvironmentFactorsSection() {
   const [factors, setFactors] = useState([
     {
       name: 'Humidity',
-      currentValue: '70%',
+      unit: '%',
       data: [12, 5, 9, 30, 20, 51, 20, 1, 4, 2, 70],
       currentMode: 'Auto',
     },
     {
       name: 'Light',
-      currentValue: '600 Lux',
+      unit: 'Lux',
       data: [12, 5, 9, 30, 20, 51, 20, 1, 4, 2, 70],
       currentMode: 'Auto',
     },
     {
-      name: 'Soil moisture',
-      currentValue: '55%',
+      name: 'Moisture',
+      unit: '%',
       data: [12, 5, 9, 30, 20, 51, 20, 1, 4, 2, 70],
       currentMode: 'Auto',
     },
     {
       name: 'Temperature',
-      currentValue: '30°C',
+      unit: '°C',
       data: [12, 5, 9, 30, 20, 51, 20, 1, 4, 2, 70],
       currentMode: 'Auto',
-      icon: <Droplets size={20} />,
     },
   ]);
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchFactorStatData = async () => {
+        console.log('hehe');
+        try {
+          const responseStat = await fetch('http://localhost:4000/stat', {
+            method: 'GET',
+          });
+          if (!responseStat.ok) {
+            throw new Error('Failed to fetch factor stat');
+          }
+          const statData = await responseStat.json();
+
+          const responseCurMode = await fetch(
+            'http://localhost:4000/systemmode',
+            {
+              method: 'GET',
+            },
+          );
+          if (!responseCurMode.ok) {
+            throw new Error('Failed to fetch factor system mode');
+          }
+          const curModeData = await responseCurMode.json();
+          const updatedFactors = factors.map(factor => ({
+            ...factor,
+            data: statData[factor.name] || [],
+            currentMode: curModeData[factor.name],
+          }));
+          setFactors(updatedFactors);
+        } catch (err) {
+          console.error(err);
+        }
+      };
+      fetchFactorStatData();
+    }, [systemMode]),
+  );
 
   return (
     <YStack>
@@ -62,16 +99,10 @@ function EvironmentFactorsSection() {
           <Card
             // marginVertical={10}
             name={factor.name}
-            currentValue={factor.currentValue}
+            currentValue={`${factor.data.slice(-1)} ${factor.unit}`}
             currentMode={factor.currentMode}
             icon={getIcon(factor.name)}>
-            <LineGraph
-              data={factor.data}
-              style={[tw`mb-4`]}
-              color="rose"
-              label="views"
-              stat="120k"
-            />
+            <LineGraph data={factor.data} style={[tw`mb-4`]} color="rose" />
           </Card>
         ))}
       </XStack>

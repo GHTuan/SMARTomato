@@ -5,8 +5,6 @@ import {Image, XStack, YStack, Text, Button} from 'tamagui';
 function Card({name, currentValue, children, icon, currentMode}) {
   return (
     <YStack
-      // borderColor={'black'}
-      // borderWidth={1}
       width={175}
       height={175}
       justifyContent="space-between"
