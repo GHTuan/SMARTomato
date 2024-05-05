@@ -2,7 +2,7 @@ import React, {Children} from 'react';
 import {View} from 'react-native';
 import {Image, XStack, YStack, Text, Button} from 'tamagui';
 
-function Card({name, currentValue, children, icon}) {
+function Card({name, currentValue, children, icon, currentMode}) {
   return (
     <YStack
       // borderColor={'black'}
@@ -24,7 +24,7 @@ function Card({name, currentValue, children, icon}) {
         <YStack>
           <Text>{name}</Text>
           <Text color={'$black025'} fontSize={11}>
-            Automatic
+            {currentMode}
           </Text>
         </YStack>
         {icon}

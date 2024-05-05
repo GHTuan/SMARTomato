@@ -11,7 +11,7 @@ import {
   Sun,
   ThermometerSun,
 } from '@tamagui/lucide-icons';
-import React from 'react';
+import React, {useState} from 'react';
 import {ImageBackground} from 'react-native';
 import {
   H3,
@@ -28,13 +28,43 @@ import {tw} from '../../../tailwind';
 import Card from './Components/Card';
 import DeviceControlCard from './Components/DeviceControlCard';
 import {LineGraph} from './Components/LineGraph';
+import EvironmentFactorsSection from './EvironmentFactorsSection';
 
 const HomeScreen = () => {
+  const [systemMode, setSystemMode] = useState('Auto');
+
+  const toggleSwitch = async () => {
+    console.log(systemMode);
+    const newMode = systemMode === 'Auto' ? 'Manual' : 'Auto';
+    setSystemMode(newMode);
+    if (systemMode === 'Auto') {
+      try {
+        const response = await fetch('http://localhost:4000/systemmode', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            // Authorization: `Bearer ${yourToken}`, // Add your token here
+          },
+          body: JSON.stringify({mode: newMode}),
+        });
+        if (!response.ok) {
+          throw new Error('Failed to update system mode');
+        }
+        console.log('System mode updated successfully');
+      } catch (error) {
+        console.error('Error updating system mode:', error);
+        // Revert system mode if there's an error
+        setSystemMode(prev => (prev === 'Auto' ? 'Manual' : 'Auto'));
+      }
+    }
+    // setSystemMode(prev => (prev === 'Auto' ? 'Manual' : 'Auto'));
+  };
+
   return (
     <ScrollView backgroundColor="#F5F6FA">
       <ImageBackground
         source={require('./image/main-bg.png')}
-        style={{height: 250}}>
+        style={{height: 300}}>
         <YStack
           flex={1}
           justifyContent="space-between"
@@ -51,78 +81,33 @@ const HomeScreen = () => {
               style={{width: 40, height: 40}}
             />
           </XStack>
-          <YStack className="flex-col">
+          <YStack>
             <H4 color={'white'}>System mode</H4>
-            <View alignItems="center">
+            <XStack
+              paddingVertical={25}
+              alignSelf="center"
+              justifyContent="space-evenly"
+              width={'100%'}
+              alignItems="center">
+              <Text color={'white'}>Manual</Text>
               <Switch
                 // id={id}
                 size={'$10'}
-                defaultChecked={true}>
+                onCheckedChange={toggleSwitch}
+                checked={systemMode === 'Manual'}
+                // trackColor= {false: red, true: color}
+                // defaultChecked={true}
+              >
                 <Switch.Thumb animation="quicker" backgroundColor={'green'} />
               </Switch>
-            </View>
+              <Text color={'white'}>Auto</Text>
+            </XStack>
             <Text color={'white'}>Last modified:</Text>
           </YStack>
         </YStack>
       </ImageBackground>
       <Main paddingHorizontal={25} paddingVertical={10}>
-        <YStack>
-          <H3>Environment factors</H3>
-          <YStack gap={12} paddingTop={10}>
-            <XStack justifyContent="space-between">
-              <Card
-                name={'Humidity'}
-                currentValue={'70%'}
-                icon={<Droplets size={20} />}>
-                <LineGraph
-                  data={[12, 5, 9, 30, 20, 51, 20, 1, 4, 2, 70]}
-                  style={[tw`mb-4`]}
-                  color="rose"
-                  label="views"
-                  stat="120k"
-                />
-              </Card>
-              <Card
-                name={'Light sensitivity'}
-                currentValue={'600 Lux'}
-                icon={<Sun size={20} />}>
-                <LineGraph
-                  data={[12, 5, 9, 30, 20, 51, 20, 1, 4, 2, 70]}
-                  style={[tw`mb-4`]}
-                  color="rose"
-                  label="views"
-                  stat="120k"
-                />
-              </Card>
-            </XStack>
-            <XStack justifyContent="space-between">
-              <Card
-                name={'Soil moisture'}
-                currentValue={'55%'}
-                icon={<Droplet size={20} />}>
-                <LineGraph
-                  data={[12, 5, 9, 30, 20, 51, 20, 1, 4, 2, 70]}
-                  style={[tw`mb-4`]}
-                  color="rose"
-                  label="views"
-                  stat="120k"
-                />
-              </Card>
-              <Card
-                name={'Temperature'}
-                currentValue={'30°C'}
-                icon={<ThermometerSun size={20} />}>
-                <LineGraph
-                  data={[12, 5, 9, 30, 20, 51, 20, 1, 4, 2, 70]}
-                  style={[tw`mb-4`]}
-                  color="rose"
-                  label="views"
-                  stat="120k"
-                />
-              </Card>
-            </XStack>
-          </YStack>
-        </YStack>
+        <EvironmentFactorsSection />
         <YStack paddingVertical={10}>
           <H4>Device controls</H4>
           <XStack flexWrap="wrap" justifyContent="space-between" paddingTop={5}>
