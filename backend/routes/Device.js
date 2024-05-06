@@ -11,14 +11,14 @@ const Factor = mongoose.model("Factor");
 
 const { refreshDevice, toggleDevice } = require("../internal/dataFlow");
 
-router.get("/hello", requireLogin, (req, res) => {
+router.get("/hello", (req, res) => {
   return res.json({ message: "Hello" });
 });
 // Getting factor for each middle route
-router.use("/humid", requireLogin, humidFactor, itemRouter);
-router.use("/temp", requireLogin, tempFactor, itemRouter);
-router.use("/soil", requireLogin, soilFactor, itemRouter);
-router.use("/light", requireLogin, lightFactor, itemRouter);
+router.use("/humid", humidFactor, itemRouter);
+router.use("/temp", tempFactor, itemRouter);
+router.use("/soil", soilFactor, itemRouter);
+router.use("/light", lightFactor, itemRouter);
 
 itemRouter.get("/mode", (req, res) => {
   return res.json({
@@ -28,7 +28,9 @@ itemRouter.get("/mode", (req, res) => {
 });
 
 itemRouter.post("/mode", (req, res) => {
+  console.log("lele");
   const { mode, devicestt } = req.body;
+  console.log(mode, devicestt);
   ///
   if (mode == "Auto") {
     if (req.factor.curmode == "Auto") {
@@ -36,7 +38,7 @@ itemRouter.post("/mode", (req, res) => {
       return res.status(200).json({ message: "The same settings" });
     } else {
       //change from manual to auto
-      Factor.findByIdAndUpdate(req.factor._id, {
+      Factor.findByIdAndUpdate("6637bffc41c64d2ecaa27573", {
         curmode: mode,
         devicestt: devicestt,
       }).then(() => {
@@ -53,11 +55,11 @@ itemRouter.post("/mode", (req, res) => {
       } else {
         // console.log(req.factor.devicestt)
         // console.log(devicestt)
-        Factor.findByIdAndUpdate(req.factor._id, {
+        Factor.findByIdAndUpdate("6637bffc41c64d2ecaa27573", {
           curmode: mode,
           devicestt: devicestt,
         }).then(() => {
-          toggleDevice(req.factor._id, devicestt, "User");
+          toggleDevice("6637bffc41c64d2ecaa27573", devicestt, "User");
           return res
             .status(200)
             .json({ message: "Change manual to manual with " + devicestt });
@@ -65,11 +67,11 @@ itemRouter.post("/mode", (req, res) => {
       }
     } else {
       //change from auto to manual with devicestt
-      Factor.findByIdAndUpdate(req.factor._id, {
+      Factor.findByIdAndUpdate("6637bffc41c64d2ecaa27573", {
         curmode: mode,
         devicestt: devicestt,
       }).then(() => {
-        toggleDevice(req.factor._id, devicestt, "User");
+        toggleDevice("6637bffc41c64d2ecaa27573", devicestt, "User");
         return res
           .status(200)
           .json({ message: "Change manual to manual with " + devicestt });
@@ -85,7 +87,7 @@ itemRouter.get("/current", (req, res) => {
 });
 
 itemRouter.post("/refresh", async (req, res) => {
-  const data = await refreshDevice(req.factor._id);
+  const data = await refreshDevice("6637bffc41c64d2ecaa27573");
 
   if (!data) {
     return res.status(500).json({ error: "Internal Server Error" });

@@ -72,7 +72,6 @@ const HomeScreen = () => {
             throw new Error('Failed to fetch factor stat');
           }
           const statData = await responseStat.json();
-          console.log('statData', statData);
           const responseCurMode = await fetch(
             'http://localhost:4000/systemmode',
             {
@@ -88,21 +87,7 @@ const HomeScreen = () => {
             data: statData[factor.name] || [],
             currentMode: curModeData[factor.name].curMode,
           }));
-          console.log('hehe', updatedFactors);
           setFactors(updatedFactors);
-          // setSystemMode(
-          //   Object.values(curModeData).every(
-          //     factor => factor.curmode === 'Auto',
-          //   )
-          //     ? 'Auto'
-          //     : 'Manual',
-          // );
-          // setDeviceControl(
-          //   deviceControl.map(device => ({
-          //     ...device,
-          //     deviceStt: curModeData[device.name],
-          //   })),
-          // );
         } catch (err) {
           console.error(err);
         }
@@ -130,23 +115,20 @@ const HomeScreen = () => {
             // data: statData[factor.name] || [],
             currentMode: curModeData[factor.name].curMode,
           }));
-          console.log('keke', updatedFactors);
           setFactors(updatedFactors);
           if (
             Object.values(curModeData).every(
               factor => factor.curMode === 'Auto',
             )
           ) {
-            console.log('Wtf');
             setSystemMode('Auto');
           } else {
-            console.log('jkjdks');
             setSystemMode('Manual');
           }
           setDeviceControl(
             deviceControl.map(device => ({
               ...device,
-              deviceStt: curModeData[device.name],
+              deviceStt: curModeData[device.name].deviceStt,
             })),
           );
         } catch (err) {
@@ -158,9 +140,9 @@ const HomeScreen = () => {
   );
 
   const toggleSwitch = async () => {
-    console.log('old', systemMode);
+    // console.log('old', systemMode);
     const newMode = systemMode === 'Auto' ? 'Manual' : 'Auto';
-    console.log('new', newMode);
+    // console.log('new', newMode);
     setSystemMode(newMode);
     if (newMode === 'Auto') {
       try {

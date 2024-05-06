@@ -7,13 +7,13 @@ function DeviceControlSection({deviceControl, setDeviceControl, factors}) {
   const getIcon = name => {
     switch (name) {
       case 'Humidity':
-        return <Fan size={22} />;
+        return <Fan size={22} color={'white'} />;
       case 'Light':
-        return <Lightbulb size={22} />;
-      case 'Soil moisture':
-        return <Droplets size={22} />;
+        return <Lightbulb size={22} color={'white'} />;
+      case 'Moisture':
+        return <Droplets size={22} color={'white'} />;
       case 'Temperature':
-        return <CloudSun size={22} />;
+        return <CloudSun size={22} color={'white'} />;
       default:
         return null;
     }
@@ -25,8 +25,8 @@ function DeviceControlSection({deviceControl, setDeviceControl, factors}) {
         {deviceControl
           .map(device => ({
             ...device,
-            curMode: factors.filter(factor => factor.name === device.name)
-              .curMode,
+            curMode: factors.find(factor => factor.name === device.name)
+              .currentMode,
           }))
           .map(device => (
             <DeviceControlCard

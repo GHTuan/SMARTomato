@@ -3,40 +3,38 @@ import {Circle, Switch, Text, XStack} from 'tamagui';
 function DeviceControlCard({name, curMode, icon, setDeviceControl}) {
   const getRoute = name => {
     switch (name) {
-      case 'Humidity':
+      case 'Garden fan':
         return 'humid';
-      case 'Light':
+      case 'Garden light':
         return 'light';
-      case 'Moisture':
+      case 'Water pump':
         return 'soil';
-      case 'Temperature':
+      case 'Garden roof':
         return 'temp';
       default:
         return null;
     }
   };
   const handleDeviceControl = async value => {
-    if (systemMode === 'Auto') {
-      try {
-        const response = await fetch(
-          `http://localhost:4000/${getRoute(name)}/mode`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              // Authorization: `Bearer ${yourToken}`, // Add your token here
-            },
-            body: JSON.stringify({mode: curMode, devicestt: value}),
+    console.log(name);
+    console.log(`http://localhost:4000/${getRoute(name)}/mode`);
+    try {
+      const response = await fetch(
+        `http://localhost:4000/${getRoute(name)}/mode`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
           },
-        );
-        if (!response.ok) {
-          throw new Error('Failed to update system mode');
-        }
-        console.log('System mode updated successfully');
-      } catch (error) {
-        console.error('Error updating system mode:', error);
-        setDeviceControl(prev => (prev === 'Auto' ? 'Manual' : 'Auto'));
+          body: JSON.stringify({mode: curMode, devicestt: value}),
+        },
+      );
+      if (!response.ok) {
+        throw new Error(`Failed to set ${name} devicestt to ${value}`);
       }
+      console.log(`${name} devicestt set successfully to ${value}`);
+    } catch (error) {
+      console.error('Error updating system mode:', error);
     }
   };
   return (

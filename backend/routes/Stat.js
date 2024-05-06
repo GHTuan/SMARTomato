@@ -51,7 +51,7 @@ router.get(
       factors.forEach((factor) => {
         factorModes[factor.name] = {
           curMode: factor.curmode,
-          deviceStt: factor.deviceStt,
+          deviceStt: factor.devicestt,
         };
       });
 
