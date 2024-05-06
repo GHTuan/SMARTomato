@@ -2,59 +2,167 @@
 // https://aboutreact.com/react-native-login-and-signup/
 
 // Import React and Component
-import {
-  CloudSun,
-  Droplet,
-  Droplets,
-  Fan,
-  Lightbulb,
-  Sun,
-  ThermometerSun,
-} from '@tamagui/lucide-icons';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {ImageBackground} from 'react-native';
-import {
-  H3,
-  H4,
-  Main,
-  ScrollView,
-  Switch,
-  Text,
-  View,
-  XStack,
-  YStack,
-} from 'tamagui';
-import {tw} from '../../../tailwind';
-import Card from './Components/Card';
-import DeviceControlCard from './Components/DeviceControlCard';
-import {LineGraph} from './Components/LineGraph';
-import EvironmentFactorsSection from './EvironmentFactorsSection';
+import {H3, H4, Main, ScrollView, Switch, Text, XStack, YStack} from 'tamagui';
+import EvironmentFactorsSection from './Section/EvironmentFactorsSection';
+import DeviceControlSection from './Section/DeviceControlSection';
+import {useFocusEffect} from '@react-navigation/native';
 
 const HomeScreen = () => {
   const [systemMode, setSystemMode] = useState('Auto');
+  const [deviceControl, setDeviceControl] = useState([
+    {
+      name: 'Humidity',
+      deviceName: 'Garden fan',
+      deviceStt: true,
+    },
+    {
+      name: 'Light',
+      deviceName: 'Garden light',
+      deviceStt: true,
+    },
+    {
+      name: 'Moisture',
+      deviceName: 'Water pump',
+      deviceStt: true,
+    },
+    {
+      name: 'Temperature',
+      deviceName: 'Garden roof',
+      deviceStt: true,
+    },
+  ]);
 
-  useEffect(() => {
-    const fetchFactorModes = async () => {
-      try {
-        const response = await fetch('http://localhost:4000/systemmode', {
-          method: 'GET',
-        });
-        if (!response.ok) {
-          throw new Error('Failed to fetch factor modes');
+  const [factors, setFactors] = useState([
+    {
+      name: 'Humidity',
+      unit: '%',
+      data: [12, 5, 9, 30, 20, 51, 20, 1, 4, 2, 70],
+      currentMode: 'Auto',
+    },
+    {
+      name: 'Light',
+      unit: 'Lux',
+      data: [12, 5, 9, 30, 20, 51, 20, 1, 4, 2, 70],
+      currentMode: 'Auto',
+    },
+    {
+      name: 'Moisture',
+      unit: '%',
+      data: [12, 5, 9, 30, 20, 51, 20, 1, 4, 2, 70],
+      currentMode: 'Auto',
+    },
+    {
+      name: 'Temperature',
+      unit: '°C',
+      data: [12, 5, 9, 30, 20, 51, 20, 1, 4, 2, 70],
+      currentMode: 'Auto',
+    },
+  ]);
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchFactorStatData = async () => {
+        try {
+          const responseStat = await fetch('http://localhost:4000/stat', {
+            method: 'GET',
+          });
+          if (!responseStat.ok) {
+            throw new Error('Failed to fetch factor stat');
+          }
+          const statData = await responseStat.json();
+          console.log('statData', statData);
+          const responseCurMode = await fetch(
+            'http://localhost:4000/systemmode',
+            {
+              method: 'GET',
+            },
+          );
+          if (!responseCurMode.ok) {
+            throw new Error('Failed to fetch factor system mode');
+          }
+          const curModeData = await responseCurMode.json();
+          const updatedFactors = factors.map(factor => ({
+            ...factor,
+            data: statData[factor.name] || [],
+            currentMode: curModeData[factor.name].curMode,
+          }));
+          console.log('hehe', updatedFactors);
+          setFactors(updatedFactors);
+          // setSystemMode(
+          //   Object.values(curModeData).every(
+          //     factor => factor.curmode === 'Auto',
+          //   )
+          //     ? 'Auto'
+          //     : 'Manual',
+          // );
+          // setDeviceControl(
+          //   deviceControl.map(device => ({
+          //     ...device,
+          //     deviceStt: curModeData[device.name],
+          //   })),
+          // );
+        } catch (err) {
+          console.error(err);
         }
-        const data = await response.json();
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    fetchFactorModes();
-  }, []);
+      };
+      fetchFactorStatData();
+    }, [systemMode]),
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchSystemMode = async () => {
+        try {
+          const responseCurMode = await fetch(
+            'http://localhost:4000/systemmode',
+            {
+              method: 'GET',
+            },
+          );
+          if (!responseCurMode.ok) {
+            throw new Error('Failed to fetch factor system mode');
+          }
+          const curModeData = await responseCurMode.json();
+          const updatedFactors = factors.map(factor => ({
+            ...factor,
+            // data: statData[factor.name] || [],
+            currentMode: curModeData[factor.name].curMode,
+          }));
+          console.log('keke', updatedFactors);
+          setFactors(updatedFactors);
+          if (
+            Object.values(curModeData).every(
+              factor => factor.curMode === 'Auto',
+            )
+          ) {
+            console.log('Wtf');
+            setSystemMode('Auto');
+          } else {
+            console.log('jkjdks');
+            setSystemMode('Manual');
+          }
+          setDeviceControl(
+            deviceControl.map(device => ({
+              ...device,
+              deviceStt: curModeData[device.name],
+            })),
+          );
+        } catch (err) {
+          console.error(err);
+        }
+      };
+      fetchSystemMode();
+    }, []),
+  );
 
   const toggleSwitch = async () => {
-    console.log(systemMode);
+    console.log('old', systemMode);
     const newMode = systemMode === 'Auto' ? 'Manual' : 'Auto';
+    console.log('new', newMode);
     setSystemMode(newMode);
-    if (systemMode === 'Auto') {
+    if (newMode === 'Auto') {
       try {
         const response = await fetch('http://localhost:4000/systemmode', {
           method: 'POST',
@@ -109,7 +217,7 @@ const HomeScreen = () => {
                 // id={id}
                 size={'$10'}
                 onCheckedChange={toggleSwitch}
-                checked={systemMode === 'Manual'}
+                checked={systemMode === 'Auto'}
                 // trackColor= {false: red, true: color}
                 // defaultChecked={true}
               >
@@ -122,28 +230,12 @@ const HomeScreen = () => {
         </YStack>
       </ImageBackground>
       <Main paddingHorizontal={25} paddingVertical={10}>
-        <EvironmentFactorsSection systemMode={systemMode} />
-        <YStack paddingVertical={10}>
-          <H4>Device controls</H4>
-          <XStack flexWrap="wrap" justifyContent="space-between" paddingTop={5}>
-            <DeviceControlCard
-              name={'Garden fan'}
-              icon={<Fan color={'white'} size={22} />}
-            />
-            <DeviceControlCard
-              name={'Garden light'}
-              icon={<Lightbulb color={'white'} size={22} />}
-            />
-            <DeviceControlCard
-              name={'Water pump'}
-              icon={<Droplets color={'white'} size={22} />}
-            />
-            <DeviceControlCard
-              name={'Garden roof'}
-              icon={<CloudSun color={'white'} size={22} />}
-            />
-          </XStack>
-        </YStack>
+        <EvironmentFactorsSection factors={factors} />
+        <DeviceControlSection
+          deviceControl={deviceControl}
+          factors={factors}
+          setDeviceControl={setDeviceControl}
+        />
       </Main>
     </ScrollView>
   );

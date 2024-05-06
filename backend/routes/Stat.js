@@ -49,7 +49,10 @@ router.get(
       // Create an object to store mode of each factor
       const factorModes = {};
       factors.forEach((factor) => {
-        factorModes[factor.name] = factor.curmode;
+        factorModes[factor.name] = {
+          curMode: factor.curmode,
+          deviceStt: factor.deviceStt,
+        };
       });
 
       // Return object containing mode of each factor
