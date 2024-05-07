@@ -148,6 +148,17 @@ itemRouter.post('/threshold', (req, res) => {
 
 })
 
+router.post('/mode', requireLogin, (req, res) => {
+    const {state, reqdevice} = req.body
+    
+    if (!reqdevice){
+        return res.status(404).json({error: "Device not found"})
+    }
+
+    toggleDevice(req.user._id,reqdevice, state,"User")
+    return res.status(200).json({message: "Device successfully updated"})
+})
+
 
 
 

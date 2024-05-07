@@ -107,23 +107,23 @@ const NotificationsScreenStack = ({navigation}) => {
   );
 };
 
-// const DeviceScreenStack = ({navigation}) => {
-//   return (
-//     <Stack.Navigator
-//       initialRouteName="DeviceScreen"
-//       screenOptions={{headerShown: false}}>
-//       <Stack.Screen
-//         name="DeviceScreen"
+const DeviceScreenStack = ({navigation}) => {
+  return (
+    <Stack.Navigator
+      initialRouteName="DeviceScreen"
+      screenOptions={{headerShown: false}}>
+      <Stack.Screen
+        name="DeviceScreen"
         
-//         options={({ route ,navigation }) => ({
-//           title: 'My Screen',
-//         })}
-//       >
-//          {(props) => <DeviceScreen device={"Moisture"} />}
-//       </Stack.Screen>
-//     </Stack.Navigator>
-//   );
-// };
+        options={({ route ,navigation }) => ({
+          title: 'My Screen',
+        })}
+      >
+         {(props) => <DeviceScreen device={"Moisture"} />}
+      </Stack.Screen>
+    </Stack.Navigator>
+  );
+};
 
 const TabNavigationRoutes = props => {
   return (
@@ -187,11 +187,11 @@ const TabNavigationRoutes = props => {
         options={{tabLabel: 'UserScreen'}}
         component={UserSettingsScreenStack}
       />
-      {/* <Tab.Screen
+      <Tab.Screen
         name="Devive Dummy"
         options={{tabLabel: 'Devive'}}
         component={DeviceScreenStack}
-      /> */}
+      />
     </Tab.Navigator>
   );
 };
