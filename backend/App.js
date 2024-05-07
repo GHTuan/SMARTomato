@@ -18,10 +18,21 @@ mongoose.connection.on('error',(err)=>{
 })
 
 require('./models/User')
+require('./models/Factor')
+require('./models/Stat')
+require('./models/ActivityLog')
+require('./models/Notification')
+require('./models/Device')
 
+
+require('./internal/dataLoop')
 
 app.use(express.json())
 app.use(require('./routes/Auth'))
+app.use(require('./routes/Device'))
+app.use(require('./routes/Stat'))
+app.use(require('./routes/LogAndNoti'))
+app.use(require('./routes/User'))
 
 
 
