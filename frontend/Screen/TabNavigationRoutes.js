@@ -111,15 +111,7 @@ const NotificationsScreenStack = ({navigation}) => {
 //   return (
 //     <Stack.Navigator
 //       initialRouteName="DeviceScreen"
-//       screenOptions={{
-//         headerStyle: {
-//           backgroundColor: '#307ecc', //Set Header color
-//         },
-//         headerTintColor: '#fff', //Set Header text color
-//         headerTitleStyle: {
-//           fontWeight: 'bold', //Set Header text style
-//         },
-//       }}>
+//       screenOptions={{headerShown: false}}>
 //       <Stack.Screen
 //         name="DeviceScreen"
         
@@ -127,7 +119,7 @@ const NotificationsScreenStack = ({navigation}) => {
 //           title: 'My Screen',
 //         })}
 //       >
-//          {(props) => <DeviceScreen device={"SoilMoisture"} />}
+//          {(props) => <DeviceScreen device={"Moisture"} />}
 //       </Stack.Screen>
 //     </Stack.Navigator>
 //   );

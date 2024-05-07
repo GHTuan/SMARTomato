@@ -3,6 +3,7 @@ const AIO_KEY = "aio_zMoY56IEfLbSczn5aaxqXj4uOTmy";
 const FEED_NAMES = ["handmade", "light", "pump", "awning", "fan"];
 
 async function controlDevice(feedName, value) {
+  console.log("Turn " + feedName + " : " + value);
   const result = await fetch(`https://io.adafruit.com/api/v2/${AIO_USERNAME}/feeds/${feedName}/data`,{
     method: 'POST',
     headers: {

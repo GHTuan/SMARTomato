@@ -21,11 +21,7 @@ const factorSchema = new mongoose.Schema({
     upbound: {
         type: Number,
         required: true
-    },
-    devicestt: {
-        type: Boolean,
-        default: false
-    },
+    }
 })
 
 mongoose.model("Factor",factorSchema)

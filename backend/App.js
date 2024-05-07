@@ -22,6 +22,7 @@ require('./models/Factor')
 require('./models/Stat')
 require('./models/ActivityLog')
 require('./models/Notification')
+require('./models/Device')
 
 
 require('./internal/dataLoop')
