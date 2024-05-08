@@ -8,6 +8,7 @@ const tempFactor = require("../middleware/tempFactor");
 const soilFactor = require("../middleware/soilFactor");
 const lightFactor = require("../middleware/lightFactor");
 const Factor = mongoose.model("Factor");
+const Device = mongoose.model("Device");
 
 const { refreshDevice, toggleDevice } = require("../internal/dataFlow");
 
@@ -15,10 +16,10 @@ router.get("/hello", (req, res) => {
   return res.json({ message: "Hello" });
 });
 // Getting factor for each middle route
-router.use("/humid", humidFactor, itemRouter);
-router.use("/temp", tempFactor, itemRouter);
-router.use("/soil", soilFactor, itemRouter);
-router.use("/light", lightFactor, itemRouter);
+router.use("/humid", requireLogin, humidFactor, itemRouter);
+router.use("/temp", requireLogin, tempFactor, itemRouter);
+router.use("/soil", requireLogin, soilFactor, itemRouter);
+router.use("/light", requireLogin, lightFactor, itemRouter);
 
 itemRouter.get("/mode", (req, res) => {
   return res.json({
@@ -26,11 +27,28 @@ itemRouter.get("/mode", (req, res) => {
     devicestt: req.factor.devicestt,
   });
 });
+itemRouter.put("/mode", requireLogin, async (req, res) => {
+  const { reqdevice } = req.body;
+  if (!reqdevice) {
+    return res.status(404).json({ error: "Device not found" });
+  }
+  var device = await Device.findOne({ userID: req.user._id, name: reqdevice });
+  if (!device) {
+    //Create new device
+    const newDevice = await new Device({
+      userID: req.user._id,
+      name: reqdevice,
+      state: false,
+    });
+    newDevice.save();
+    device = newDevice;
+  }
 
-itemRouter.post("/mode", (req, res) => {
-  console.log("lele");
+  return res.json({ mode: req.factor.curmode, state: device.state });
+});
+
+itemRouter.post("/mode", requireLogin, (req, res) => {
   const { mode, devicestt } = req.body;
-  console.log(mode, devicestt);
   ///
   if (mode == "Auto") {
     if (req.factor.curmode == "Auto") {
@@ -38,7 +56,7 @@ itemRouter.post("/mode", (req, res) => {
       return res.status(200).json({ message: "The same settings" });
     } else {
       //change from manual to auto
-      Factor.findByIdAndUpdate("6637bffc41c64d2ecaa27573", {
+      Factor.findByIdAndUpdate(req.factor._id, {
         curmode: mode,
         devicestt: devicestt,
       }).then(() => {
@@ -53,13 +71,11 @@ itemRouter.post("/mode", (req, res) => {
       if (req.factor.devicestt == devicestt) {
         return res.status(200).json({ message: "The same settings" });
       } else {
-        // console.log(req.factor.devicestt)
-        // console.log(devicestt)
-        Factor.findByIdAndUpdate("6637bffc41c64d2ecaa27573", {
+        Factor.findByIdAndUpdate(req.factor._id, {
           curmode: mode,
           devicestt: devicestt,
         }).then(() => {
-          toggleDevice("6637bffc41c64d2ecaa27573", devicestt, "User");
+          toggleDevice(req.factor._id, devicestt, "User");
           return res
             .status(200)
             .json({ message: "Change manual to manual with " + devicestt });
@@ -67,11 +83,11 @@ itemRouter.post("/mode", (req, res) => {
       }
     } else {
       //change from auto to manual with devicestt
-      Factor.findByIdAndUpdate("6637bffc41c64d2ecaa27573", {
+      Factor.findByIdAndUpdate(req.factor._id, {
         curmode: mode,
         devicestt: devicestt,
       }).then(() => {
-        toggleDevice("6637bffc41c64d2ecaa27573", devicestt, "User");
+        toggleDevice(req.factor._id, devicestt, "User");
         return res
           .status(200)
           .json({ message: "Change manual to manual with " + devicestt });
@@ -81,13 +97,24 @@ itemRouter.post("/mode", (req, res) => {
   //More log needed for switching modes
 });
 
-itemRouter.get("/current", (req, res) => {
-  //TODO
-  // get the current value
+itemRouter.get("/current", requireLogin, async (req, res) => {
+  // Stat.findById(req.factor._id, {} ,{ sort: { 'created_at' : 1 } })
+  // .then((stat) => {
+  //     console.log(stat);
+  //     return res.status(200).json({value: stat.value})
+  // })
+  // it right tho :))
+  const data = await refreshDevice(req.factor._id);
+
+  if (!data) {
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+
+  res.status(200).json({ value: data });
 });
 
-itemRouter.post("/refresh", async (req, res) => {
-  const data = await refreshDevice("6637bffc41c64d2ecaa27573");
+itemRouter.post("/refresh", requireLogin, async (req, res) => {
+  const data = await refreshDevice(req.user._id);
 
   if (!data) {
     return res.status(500).json({ error: "Internal Server Error" });
@@ -104,8 +131,54 @@ itemRouter.get("/threshold", (req, res) => {
 });
 
 itemRouter.post("/threshold", (req, res) => {
-  //TODO
-  //Set the factoy threshold
+  const { upperbound, lowerbound } = req.body;
+
+  if (!upperbound || !lowerbound || isNaN(upperbound) || isNaN(lowerbound)) {
+    return res.status(400).json({ error: "Invalid parameters" });
+  }
+
+  if (upperbound < lowerbound) {
+    return res
+      .status(400)
+      .json({ error: "Upperbound must be greater than Lowerbound" });
+  }
+  Factor.findByIdAndUpdate(req.factor._id, {
+    lowbound: lowerbound,
+    upbound: upperbound,
+  }).then(() => {
+    return res.status(200).json({ message: "Threshold updated" });
+  });
+});
+
+router.post("/mode", requireLogin, (req, res) => {
+  const { state, reqdevice } = req.body;
+
+  if (!reqdevice) {
+    return res.status(404).json({ error: "Device not found" });
+  }
+
+  toggleDevice(req.user._id, reqdevice, state, "User");
+  return res.status(200).json({ message: "Device successfully updated" });
+});
+
+module.exports = router;
+
+router.get("/mode", requireLogin, async (req, res) => {
+  try {
+    const devices = await Device.find({ userID: req.user._id });
+    if (!devices) {
+      return res.status(404).json({ error: "Device not found" });
+    }
+    res.json(
+      devices.reduce((acc, device) => {
+        acc[device.name] = device.state;
+        return acc;
+      }, {})
+    );
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 module.exports = router;

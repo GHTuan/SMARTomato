@@ -21,8 +21,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import DeviceScreen from './TabScreens/Device/DeviceScreen';
 
 import CustomSidebarMenu from './Components/CustomSidebarMenu';
-import ChangeUserInfo from './TabScreens/UserSetting/ChangeUserInfo';
-import ChangePassword from './TabScreens/UserSetting/ChangePassword';
+import ChangeUserInfo from './TabScreens/UserSetting/ChangeUserInfoScreen';
+import ChangePassword from './TabScreens/UserSetting/ChangePasswordScreen';
 import {Dimensions, View} from 'react-native';
 // import NavigationTabHeader from './Components/NavigationTabHeader';
 

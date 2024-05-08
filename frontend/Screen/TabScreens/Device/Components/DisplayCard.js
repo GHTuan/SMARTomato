@@ -3,13 +3,34 @@ import { Text,Paragraph,Progress, YStack ,XStack} from "tamagui";
 import { View } from "react-native";
 import { AnimatedCircularProgress } from "react-native-circular-progress";
 import { Circle } from "react-native-svg";
+import AsyncStorage from '@react-native-community/async-storage';
 
 const DisplayCard = (props) => {
     const [data, setData] = useState(10)
+    const [token,setToken] = useState()
     useEffect(() =>{
-        //fetch(api)
+        // fetch(api)
         // console.log(props.api) 
-        
+        async function fetchData(){
+            const token = await AsyncStorage.getItem('token');
+            // console.log(token)
+            const api = props.setting.api + "/current"; 
+            console.log(api)
+            fetch(api,{
+                method: 'GET',
+                headers: {
+                    //Header Defination
+                    "Content-Type":"application/json",
+                    "Authorization":"Bearer "+ JSON.parse(token)
+                }
+            })
+            .then((response) => response.json())
+            .then((response) => {
+                // console.log(response)
+                setData(parseFloat(response.value))
+            })
+        }
+        fetchData()
     },[]);
     return (
 
@@ -35,10 +56,10 @@ const DisplayCard = (props) => {
                     (fill) => (
                         <>
                         <Text height={40}>
-                            {data}  {props.unitOfMeasure}
+                            {data}  {props.setting.unitOfMeasure}
                         </Text>
                         <Text>
-                            Current {props.title} Level
+                            Current {props.setting.title} Level
                         </Text>
                         </>
                     )

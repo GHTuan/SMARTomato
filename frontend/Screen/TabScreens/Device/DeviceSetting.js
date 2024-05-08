@@ -6,7 +6,8 @@ const TempSetting = {
     'unitOfMeasure': 'Celsius',
     'title': 'Temperature',
     'text': 'Temperature',
-    'api': mainPath + 'temp'
+    'api': mainPath + 'temp',
+    'device': 'fan'
 }
 const SoilSetting = {
     'bottomRange': 0,
@@ -14,7 +15,8 @@ const SoilSetting = {
     'unitOfMeasure': '%',
     'title': 'Soil Moisture',
     'text': 'Soil Moisture',
-    'api': mainPath + 'soil'
+    'api': mainPath + 'soil',
+    'device': 'pump'
 }
 const LightSetting = {
     'bottomRange': 0,
@@ -22,7 +24,8 @@ const LightSetting = {
     'unitOfMeasure': 'Lux',
     'title': 'Light',
     'text': 'Light',
-    'api': mainPath + 'light'
+    'api': mainPath + 'light',
+    'device': 'light'
 }
 const HumiditySetting = {
     'bottomRange': 0,
@@ -30,7 +33,8 @@ const HumiditySetting = {
     'unitOfMeasure': '%',
     'title': 'Humidity',
     'text': 'Humidity',
-    'api': mainPath + 'humidity'
+    'api': mainPath + 'humid',
+    'device': 'awning'
 }
 
 export {

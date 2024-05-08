@@ -5,7 +5,7 @@ import {tw} from '../../../../tailwind';
 import Card from '../Components/Card';
 import {LineGraph} from '../Components/LineGraph';
 
-function EvironmentFactorsSection({factors}) {
+function EvironmentFactorsSection({factors, isLoading}) {
   const getIcon = name => {
     switch (name) {
       case 'Humidity':
@@ -26,14 +26,13 @@ function EvironmentFactorsSection({factors}) {
       <H3>Environment factors</H3>
       <XStack
         paddingTop={10}
-        // flex={2}
-        // alignContent="stretch"
         flexWrap="wrap"
         rowGap={15}
         justifyContent="space-between">
         {factors.map(factor => (
           <Card
             // marginVertical={10}
+            isLoading={isLoading}
             name={factor.name}
             currentValue={`${factor.data.slice(-1)} ${factor.unit}`}
             currentMode={factor.currentMode}

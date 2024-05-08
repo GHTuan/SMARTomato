@@ -40,32 +40,17 @@ const DeviceScreen = (props) => {
       </YStack>
       <YStack style = {{flex:1 , justifyContent: 'center', alignItems:'center', flexDirection: 'column', margin:20, backgroundColor:'transparent'}}>
       <DisplayCard 
-        bottomRange = {deviceSetting.bottomRange}
-        topRange = {deviceSetting.topRange}
-        unitOfMeasure = {deviceSetting.unitOfMeasure}
-        title = {deviceSetting.title}
-        text = {deviceSetting.text}
-        api = {deviceSetting.api}
+        setting = {deviceSetting}
         >
       </DisplayCard>
       
       <ManualCard 
-        bottomRange = {deviceSetting.bottomRange}
-        topRange = {deviceSetting.topRange}
-        unitOfMeasure = {deviceSetting.unitOfMeasure}
-        title = {deviceSetting.title}
-        text = {deviceSetting.text}
-        api = {deviceSetting.api}
+        setting = {deviceSetting}
         >
       </ManualCard>
 
       <AutomaticCard 
-        bottomRange = {deviceSetting.bottomRange}
-        topRange = {deviceSetting.topRange}
-        unitOfMeasure = {deviceSetting.unitOfMeasure}
-        title = {deviceSetting.title}
-        text = {deviceSetting.text}
-        api = {deviceSetting.api}
+        setting = {deviceSetting}
         >
       </AutomaticCard>
       
