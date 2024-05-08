@@ -1,10 +1,35 @@
-import {Button, Card, Circle, Switch, Text, XStack, YStack} from 'tamagui';
+import AsyncStorage from '@react-native-community/async-storage';
+import {Circle, Switch, Text, XStack} from 'tamagui';
 
-function DeviceControlCard({name, icon}) {
+function DeviceControlCard({name, icon, value, setDeviceControl}) {
+  const handleDeviceControl = async value => {
+    const token = await AsyncStorage.getItem('token');
+    try {
+      const response = await fetch(`http://localhost:4000/mode`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${JSON.parse(token)}`,
+        },
+        body: JSON.stringify({reqdevice: name, state: value}),
+      });
+      if (!response.ok) {
+        throw new Error(`Failed to set ${name} devicestt to ${value}`);
+      }
+
+      setDeviceControl(prev => {
+        return prev.map(device =>
+          device.name === name ? {...device, state: value} : device,
+        );
+      });
+    } catch (error) {
+      console.error('Error updating system mode:', error);
+    }
+  };
   return (
     <XStack
       height={50}
-      width={175}
+      width={'48%'}
       backgroundColor={'white'}
       justifyContent="space-between"
       alignItems="center"
@@ -15,7 +40,7 @@ function DeviceControlCard({name, icon}) {
         {icon}
       </Circle>
       <Text fontSize={11}>{name}</Text>
-      <Switch defaultChecked={true} size={'$3'}>
+      <Switch checked={value} size={'$3'} onCheckedChange={handleDeviceControl}>
         <Switch.Thumb animation="quicker" backgroundColor={'green'} />
       </Switch>
     </XStack>

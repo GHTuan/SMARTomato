@@ -14,13 +14,16 @@ import {
 // Import Screens
 import HomeScreen from './TabScreens/Home/HomeScreen';
 import SettingsScreen from './TabScreens/SettingsScreen';
-import UserSettingsScreen from './TabScreens/UserSettingsScreen';
+import UserSettingsScreen from './TabScreens/UserSetting/UserSettingsScreen';
 import StatisticsScreen from './TabScreens/StatisticsScreen';
 import NotificationsScreen from './TabScreens/NotificationsScreen';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import DeviceScreen from './TabScreens/Device/DeviceScreen';
 
 import CustomSidebarMenu from './Components/CustomSidebarMenu';
+import ChangeUserInfo from './TabScreens/UserSetting/ChangeUserInfoScreen';
+import ChangePassword from './TabScreens/UserSetting/ChangePasswordScreen';
+import {Dimensions, View} from 'react-native';
 // import NavigationTabHeader from './Components/NavigationTabHeader';
 
 const Stack = createStackNavigator();
@@ -69,6 +72,16 @@ const UserSettingsScreenStack = ({navigation}) => {
           title: 'UserSettings', //Set Header Title
         }}
       />
+      <Stack.Screen
+        name="ChangeUserInfoScreen"
+        component={ChangeUserInfo}
+        options={{title: 'ChangeUserInfo'}}
+      />
+      <Stack.Screen
+        name="ChangePasswordScreen"
+        component={ChangePassword}
+        options={{title: 'ChangePassword'}}
+      />
     </Stack.Navigator>
   );
 };
@@ -107,28 +120,43 @@ const NotificationsScreenStack = ({navigation}) => {
   );
 };
 
-const DeviceScreenStack = ({navigation}) => {
-  return (
-    <Stack.Navigator
-      initialRouteName="DeviceScreen"
-      screenOptions={{headerShown: false}}>
-      <Stack.Screen
-        name="DeviceScreen"
-        
-        options={({ route ,navigation }) => ({
-          title: 'My Screen',
-        })}
-      >
-         {(props) => <DeviceScreen device={"Moisture"} />}
-      </Stack.Screen>
-    </Stack.Navigator>
-  );
-};
+// const DeviceScreenStack = ({navigation}) => {
+//   return (
+//     <Stack.Navigator
+//       initialRouteName="DeviceScreen"
+//       screenOptions={{
+//         headerStyle: {
+//           backgroundColor: '#307ecc', //Set Header color
+//         },
+//         headerTintColor: '#fff', //Set Header text color
+//         headerTitleStyle: {
+//           fontWeight: 'bold', //Set Header text style
+//         },
+//       }}>
+//       <Stack.Screen
+//         name="DeviceScreen"
+
+//         options={({ route ,navigation }) => ({
+//           title: 'My Screen',
+//         })}
+//       >
+//          {(props) => <DeviceScreen device={"SoilMoisture"} />}
+//       </Stack.Screen>
+//     </Stack.Navigator>
+//   );
+// };
+const {width, height} = Dimensions.get('window');
 
 const TabNavigationRoutes = props => {
   return (
+    // <View
+    //   style={{
+    //     width,
+    //     height,
+    //   }}>
     <Tab.Navigator
       tabContentOptions={{
+        // tabBarHideOnKeyboard: true,
         activeTintColor: '#cee1f2',
         color: '#cee1f2',
         itemStyle: {marginVertical: 5, color: 'white'},
@@ -159,6 +187,7 @@ const TabNavigationRoutes = props => {
         tabBarInactiveTintColor: 'gray',
         headerShown: false,
         tabBarShowLabel: false,
+        tabBarHideOnKeyboard: true,
       })}
       // tabContent={CustomSidebarMenu}
     >
@@ -187,12 +216,13 @@ const TabNavigationRoutes = props => {
         options={{tabLabel: 'UserScreen'}}
         component={UserSettingsScreenStack}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name="Devive Dummy"
         options={{tabLabel: 'Devive'}}
         component={DeviceScreenStack}
-      />
+      /> */}
     </Tab.Navigator>
+    // </View>
   );
 };
 
