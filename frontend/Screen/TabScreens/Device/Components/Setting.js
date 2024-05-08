@@ -12,14 +12,64 @@ import {
   Unspaced,
   XStack,
 } from 'tamagui'
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toGammaSpace } from 'react-native-reanimated/lib/typescript/reanimated2/Colors';
+import AsyncStorage from '@react-native-community/async-storage';
 
 
 
-function Setting({title}) {
-  const [lowerBound,setLowerBound] = useState(0)
-  const [upperBound,setUpperBound] = useState(100)
+const Setting = (props) => {
+  const [lowerBound,setLowerBound] = useState()
+  const [upperBound,setUpperBound] = useState()
+  useEffect(() => {
+    async function fetchData(){
+      const token = await AsyncStorage.getItem('token');
+      // console.log(token)
+
+      const api = props.setting.api + "/threshold"; 
+      fetch(api,{
+          method: 'GET',
+          headers: {
+              //Header Defination
+              "Content-Type":"application/json",
+              "Authorization":"Bearer "+ JSON.parse(token)
+          }
+      })
+      .then((response) => response.json())
+      .then((response) => {
+        console.log(response)
+        setLowerBound(''+response.lowerbound)
+        setUpperBound(''+response.upperbound)
+        })
+    }
+    fetchData()
+  },[props])
+async function updateThreshold(){
+  const token = await AsyncStorage.getItem('token');
+  // console.log(token)
+
+  const api = props.setting.api + "/threshold"; 
+  fetch(api,{
+      method: 'POST',
+      headers: {
+          //Header Defination
+          "Content-Type":"application/json",
+          "Authorization":"Bearer "+ JSON.parse(token)
+      },
+      body: JSON.stringify({
+        lowerbound:lowerBound,
+        upperbound:upperBound,
+      }),
+  })
+  .then((response) => response.json())
+  .then((response) => {
+    console.log(response)
+    // console.log(lowerBound)
+    // console.log(upperBound)
+    })
+}
+
+
   return (
     <Dialog modal>
       <Dialog.Trigger asChild>
@@ -65,7 +115,7 @@ function Setting({title}) {
           exitStyle={{ x: 0, y: 10, opacity: 0, scale: 0.95 }}
           gap="$4"
         >
-          <Dialog.Title>Edit {title} Threshold</Dialog.Title>
+          <Dialog.Title>Edit {props.setting.title} Threshold</Dialog.Title>
           <Dialog.Description>
             Make changes to the automatic threshold. Click save when you're done.
           </Dialog.Description>
@@ -74,8 +124,8 @@ function Setting({title}) {
               Lower Bound
             </Label>
             <Input flex={1} 
-            defaultValue= {lowerBound} 
-            onChange={ (e)=>{setLowerBound(e.value)}}
+            onChangeText= {(e)=>setLowerBound(e)}
+            value={lowerBound} 
             />
           </Fieldset>
           <Fieldset gap="$4" horizontal>
@@ -83,10 +133,9 @@ function Setting({title}) {
               Upper Bound
             </Label>
             <Input flex={1}
-            defaultValue={upperBound}
-            onChange={(e)=> {setUpperBound(e.value)}}
+            value={upperBound} 
+            onChangeText={(e)=> {setUpperBound(e)}}
              />
-          
           </Fieldset>
 
           <XStack alignSelf="flex-end" gap="$4">
@@ -94,10 +143,10 @@ function Setting({title}) {
             <Dialog.Close displayWhenAdapted asChild>
               <Button theme="active" aria-label="Close"
               onPress = {() => {
-                console.log(lowerBound)
-                console.log(upperBound)
+                // console.log(lowerBound)
+                // console.log(upperBound)
                 // ughhh something when wrong here
-                //fetch
+                updateThreshold()
               }}
               >
                 Save changes

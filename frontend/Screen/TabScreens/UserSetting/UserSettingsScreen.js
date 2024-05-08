@@ -3,12 +3,48 @@
 
 // Import React and Component
 import AsyncStorage from '@react-native-community/async-storage';
-import React from 'react';
+import {useFocusEffect} from '@react-navigation/native';
+import React, {useCallback, useEffect, useState} from 'react';
 import {Alert} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {Button, H3, H5, Separator, Text, View, YStack} from 'tamagui';
 
 const UserSettingsScreen = props => {
+  const [userInfo, setUserInfo] = useState({
+    name: '',
+    email: '',
+    password: '',
+    address: '',
+    phoneno: '',
+  });
+  useFocusEffect(
+    useCallback(() => {
+      const fetchUserInfo = async () => {
+        const token = await AsyncStorage.getItem('token');
+        try {
+          const response = await fetch(`http://localhost:4000/user`, {
+            method: 'GET',
+            headers: {Authorization: `Bearer ${JSON.parse(token)}`},
+          });
+          if (!response.ok) throw new Error('Failed to fetch UserInfo');
+          const data = await response.json();
+          setUserInfo({
+            name: data.name,
+            email: data.email,
+            password: '',
+            address: data.address,
+            phoneno: data.phoneno,
+          });
+          // setUserId(_id);
+          // });
+        } catch (err) {
+          console.error(err);
+        }
+      };
+      fetchUserInfo();
+    }, []),
+  );
+
   return (
     <View
       backgroundColor={'green'}
@@ -24,25 +60,31 @@ const UserSettingsScreen = props => {
         <View height={200}>
           <Ionicons size={200} name={'person-circle-outline'} color={'white'} />
         </View>
-        <H5 color={'black'}>UserName</H5>
+        <H5 color={'black'}>{userInfo.name}</H5>
       </YStack>
       <YStack paddingHorizontal={25}>
         <YStack marginBottom={15}>
           <H3>Account</H3>
           <View
             backgroundColor={'white'}
-            padding={15}
+            paddingHorizontal={15}
             borderRadius={20}
             marginTop={5}>
-            <View
+            <Text
+              fontSize={15}
+              paddingVertical={10}
               onPress={() => {
-                props.navigation.navigate('ChangeUserInfoScreen');
+                props.navigation.navigate('ChangeUserInfoScreen', {
+                  userInfo: userInfo,
+                  setUserInfo: setUserInfo,
+                });
               }}>
-              <Text fontSize={15}>Change user info</Text>
-            </View>
+              Change user info
+            </Text>
             <Separator backgroundColor={'red'} />
             <Text
               fontSize={15}
+              paddingVertical={10}
               onPress={() => {
                 props.navigation.navigate('ChangePasswordScreen');
               }}>

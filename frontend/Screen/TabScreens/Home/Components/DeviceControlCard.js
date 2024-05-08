@@ -1,38 +1,27 @@
+import AsyncStorage from '@react-native-community/async-storage';
 import {Circle, Switch, Text, XStack} from 'tamagui';
 
-function DeviceControlCard({name, curMode, icon, setDeviceControl}) {
-  const getRoute = name => {
-    switch (name) {
-      case 'Garden fan':
-        return 'humid';
-      case 'Garden light':
-        return 'light';
-      case 'Water pump':
-        return 'soil';
-      case 'Garden roof':
-        return 'temp';
-      default:
-        return null;
-    }
-  };
+function DeviceControlCard({name, icon, value, setDeviceControl}) {
   const handleDeviceControl = async value => {
-    console.log(name);
-    console.log(`http://localhost:4000/${getRoute(name)}/mode`);
+    const token = await AsyncStorage.getItem('token');
     try {
-      const response = await fetch(
-        `http://localhost:4000/${getRoute(name)}/mode`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({mode: curMode, devicestt: value}),
+      const response = await fetch(`http://localhost:4000/mode`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${JSON.parse(token)}`,
         },
-      );
+        body: JSON.stringify({reqdevice: name, state: value}),
+      });
       if (!response.ok) {
         throw new Error(`Failed to set ${name} devicestt to ${value}`);
       }
-      console.log(`${name} devicestt set successfully to ${value}`);
+
+      setDeviceControl(prev => {
+        return prev.map(device =>
+          device.name === name ? {...device, state: value} : device,
+        );
+      });
     } catch (error) {
       console.error('Error updating system mode:', error);
     }
@@ -40,7 +29,7 @@ function DeviceControlCard({name, curMode, icon, setDeviceControl}) {
   return (
     <XStack
       height={50}
-      width={175}
+      width={'48%'}
       backgroundColor={'white'}
       justifyContent="space-between"
       alignItems="center"
@@ -51,10 +40,7 @@ function DeviceControlCard({name, curMode, icon, setDeviceControl}) {
         {icon}
       </Circle>
       <Text fontSize={11}>{name}</Text>
-      <Switch
-        defaultChecked={true}
-        size={'$3'}
-        onCheckedChange={handleDeviceControl}>
+      <Switch checked={value} size={'$3'} onCheckedChange={handleDeviceControl}>
         <Switch.Thumb animation="quicker" backgroundColor={'green'} />
       </Switch>
     </XStack>

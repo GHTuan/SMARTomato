@@ -8,55 +8,58 @@ import {H3, H4, Main, ScrollView, Switch, Text, XStack, YStack} from 'tamagui';
 import EvironmentFactorsSection from './Section/EvironmentFactorsSection';
 import DeviceControlSection from './Section/DeviceControlSection';
 import {useFocusEffect} from '@react-navigation/native';
+import AsyncStorage from '@react-native-community/async-storage';
 
 const HomeScreen = () => {
   const [systemMode, setSystemMode] = useState('Auto');
   const [deviceControl, setDeviceControl] = useState([
     {
-      name: 'Humidity',
-      deviceName: 'Garden fan',
-      deviceStt: true,
+      name: 'fan',
+      // deviceName: 'Garden fan',
+      state: true,
     },
     {
-      name: 'Light',
-      deviceName: 'Garden light',
-      deviceStt: true,
+      name: 'light',
+      // deviceName: 'Garden light',
+      state: true,
     },
     {
-      name: 'Moisture',
-      deviceName: 'Water pump',
-      deviceStt: true,
+      name: 'awning',
+      // deviceName: 'Water pump',
+      state: true,
     },
     {
-      name: 'Temperature',
-      deviceName: 'Garden roof',
-      deviceStt: true,
+      name: 'pump',
+      // deviceName: 'Garden roof',
+      state: true,
     },
   ]);
+
+  const [isLoading, setIsLoading] = useState(true);
 
   const [factors, setFactors] = useState([
     {
       name: 'Humidity',
       unit: '%',
-      data: [12, 5, 9, 30, 20, 51, 20, 1, 4, 2, 70],
+      data: [],
       currentMode: 'Auto',
     },
     {
       name: 'Light',
       unit: 'Lux',
-      data: [12, 5, 9, 30, 20, 51, 20, 1, 4, 2, 70],
+      data: [],
       currentMode: 'Auto',
     },
     {
       name: 'Moisture',
       unit: '%',
-      data: [12, 5, 9, 30, 20, 51, 20, 1, 4, 2, 70],
+      data: [],
       currentMode: 'Auto',
     },
     {
       name: 'Temperature',
       unit: '°C',
-      data: [12, 5, 9, 30, 20, 51, 20, 1, 4, 2, 70],
+      data: [],
       currentMode: 'Auto',
     },
   ]);
@@ -64,9 +67,12 @@ const HomeScreen = () => {
   useFocusEffect(
     useCallback(() => {
       const fetchFactorStatData = async () => {
+        setIsLoading(true);
+        const token = await AsyncStorage.getItem('token');
         try {
           const responseStat = await fetch('http://localhost:4000/stat', {
             method: 'GET',
+            headers: {Authorization: `Bearer ${JSON.parse(token)}`},
           });
           if (!responseStat.ok) {
             throw new Error('Failed to fetch factor stat');
@@ -76,6 +82,7 @@ const HomeScreen = () => {
             'http://localhost:4000/systemmode',
             {
               method: 'GET',
+              headers: {Authorization: `Bearer ${JSON.parse(token)}`},
             },
           );
           if (!responseCurMode.ok) {
@@ -85,9 +92,10 @@ const HomeScreen = () => {
           const updatedFactors = factors.map(factor => ({
             ...factor,
             data: statData[factor.name] || [],
-            currentMode: curModeData[factor.name].curMode,
+            currentMode: curModeData[factor.name],
           }));
           setFactors(updatedFactors);
+          setIsLoading(false);
         } catch (err) {
           console.error(err);
         }
@@ -99,11 +107,15 @@ const HomeScreen = () => {
   useFocusEffect(
     useCallback(() => {
       const fetchSystemMode = async () => {
+        const token = await AsyncStorage.getItem('token');
         try {
           const responseCurMode = await fetch(
             'http://localhost:4000/systemmode',
             {
               method: 'GET',
+              headers: {
+                Authorization: 'Bearer ' + JSON.parse(token),
+              },
             },
           );
           if (!responseCurMode.ok) {
@@ -113,24 +125,20 @@ const HomeScreen = () => {
           const updatedFactors = factors.map(factor => ({
             ...factor,
             // data: statData[factor.name] || [],
-            currentMode: curModeData[factor.name].curMode,
+            currentMode: curModeData[factor.name],
           }));
           setFactors(updatedFactors);
-          if (
-            Object.values(curModeData).every(
-              factor => factor.curMode === 'Auto',
-            )
-          ) {
+          if (Object.values(curModeData).every(factor => factor === 'Auto')) {
             setSystemMode('Auto');
           } else {
             setSystemMode('Manual');
           }
-          setDeviceControl(
-            deviceControl.map(device => ({
-              ...device,
-              deviceStt: curModeData[device.name].deviceStt,
-            })),
-          );
+          // setDeviceControl(
+          //   deviceControl.map(device => ({
+          //     ...device,
+          //     deviceStt: curModeData[device.name].deviceStt,
+          //   })),
+          // );
         } catch (err) {
           console.error(err);
         }
@@ -140,9 +148,9 @@ const HomeScreen = () => {
   );
 
   const toggleSwitch = async () => {
-    // console.log('old', systemMode);
+    const token = await AsyncStorage.getItem('token');
+
     const newMode = systemMode === 'Auto' ? 'Manual' : 'Auto';
-    // console.log('new', newMode);
     setSystemMode(newMode);
     if (newMode === 'Auto') {
       try {
@@ -150,17 +158,16 @@ const HomeScreen = () => {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            // Authorization: `Bearer ${yourToken}`, // Add your token here
+            Authorization: 'Bearer ' + JSON.parse(token),
           },
           body: JSON.stringify({mode: newMode}),
         });
         if (!response.ok) {
           throw new Error('Failed to update system mode');
         }
-        console.log('System mode updated successfully');
       } catch (error) {
         console.error('Error updating system mode:', error);
-        setSystemMode(prev => (prev === 'Auto' ? 'Manual' : 'Auto'));
+        setSystemMode(prev => (prev === 'Auto' ? 'Maanual' : 'Auto'));
       }
     }
   };
@@ -196,13 +203,9 @@ const HomeScreen = () => {
               alignItems="center">
               <Text color={'white'}>Manual</Text>
               <Switch
-                // id={id}
                 size={'$10'}
                 onCheckedChange={toggleSwitch}
-                checked={systemMode === 'Auto'}
-                // trackColor= {false: red, true: color}
-                // defaultChecked={true}
-              >
+                checked={systemMode === 'Auto'}>
                 <Switch.Thumb animation="quicker" backgroundColor={'green'} />
               </Switch>
               <Text color={'white'}>Auto</Text>
@@ -212,7 +215,7 @@ const HomeScreen = () => {
         </YStack>
       </ImageBackground>
       <Main paddingHorizontal={25} paddingVertical={10}>
-        <EvironmentFactorsSection factors={factors} />
+        <EvironmentFactorsSection factors={factors} isLoading={isLoading} />
         <DeviceControlSection
           deviceControl={deviceControl}
           factors={factors}
