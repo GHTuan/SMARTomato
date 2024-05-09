@@ -30,6 +30,7 @@ router.get('/log', requireLogin, async (req, res) => {
 
 router.get('/notification',requireLogin, async(req, res) => {
     try {
+        
         const notifications = await Notification.find({ userID: req.user._id });
         const extractedNotifications = notifications.map(noti => ({
             title: noti.title,
