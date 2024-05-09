@@ -2,43 +2,181 @@
 // https://aboutreact.com/react-native-login-and-signup/
 
 // Import React and Component
-import React from 'react';
-import {SafeAreaView, ImageBackground} from 'react-native';
-import Card from './Components/Card';
-import {
-  Button,
-  H1,
-  H2,
-  H3,
-  H4,
-  Main,
-  YStack,
-  Text,
-  XStack,
-  H5,
-  ScrollView,
-  Switch,
-  View,
-} from 'tamagui';
-import {
-  Droplets,
-  Sun,
-  ThermometerSun,
-  Droplet,
-  Fan,
-  Lightbulb,
-  CloudSun,
-} from '@tamagui/lucide-icons';
-import DeviceControlCard from './Components/DeviceControlCard';
-import {LineGraph} from './Components/LineGraph';
-import {tw} from '../../../tailwind';
+import React, {useCallback, useState} from 'react';
+import {ImageBackground} from 'react-native';
+import {H3, H4, Main, ScrollView, Switch, Text, XStack, YStack} from 'tamagui';
+import EvironmentFactorsSection from './Section/EvironmentFactorsSection';
+import DeviceControlSection from './Section/DeviceControlSection';
+import {useFocusEffect} from '@react-navigation/native';
+import AsyncStorage from '@react-native-community/async-storage';
 
 const HomeScreen = () => {
+  const [systemMode, setSystemMode] = useState('Auto');
+  const [deviceControl, setDeviceControl] = useState([
+    {
+      name: 'fan',
+      // deviceName: 'Garden fan',
+      state: true,
+    },
+    {
+      name: 'light',
+      // deviceName: 'Garden light',
+      state: true,
+    },
+    {
+      name: 'awning',
+      // deviceName: 'Water pump',
+      state: true,
+    },
+    {
+      name: 'pump',
+      // deviceName: 'Garden roof',
+      state: true,
+    },
+  ]);
+
+  const [isLoading, setIsLoading] = useState(true);
+
+  const [factors, setFactors] = useState([
+    {
+      name: 'Humidity',
+      unit: '%',
+      data: [],
+      currentMode: 'Auto',
+    },
+    {
+      name: 'Light',
+      unit: 'Lux',
+      data: [],
+      currentMode: 'Auto',
+    },
+    {
+      name: 'Moisture',
+      unit: '%',
+      data: [],
+      currentMode: 'Auto',
+    },
+    {
+      name: 'Temperature',
+      unit: '°C',
+      data: [],
+      currentMode: 'Auto',
+    },
+  ]);
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchFactorStatData = async () => {
+        setIsLoading(true);
+        const token = await AsyncStorage.getItem('token');
+        try {
+          const responseStat = await fetch('http://localhost:4000/stat', {
+            method: 'GET',
+            headers: {Authorization: `Bearer ${JSON.parse(token)}`},
+          });
+          if (!responseStat.ok) {
+            throw new Error('Failed to fetch factor stat');
+          }
+          const statData = await responseStat.json();
+          const responseCurMode = await fetch(
+            'http://localhost:4000/systemmode',
+            {
+              method: 'GET',
+              headers: {Authorization: `Bearer ${JSON.parse(token)}`},
+            },
+          );
+          if (!responseCurMode.ok) {
+            throw new Error('Failed to fetch factor system mode');
+          }
+          const curModeData = await responseCurMode.json();
+          const updatedFactors = factors.map(factor => ({
+            ...factor,
+            data: statData[factor.name] || [],
+            currentMode: curModeData[factor.name],
+          }));
+          setFactors(updatedFactors);
+          setIsLoading(false);
+        } catch (err) {
+          console.error(err);
+        }
+      };
+      fetchFactorStatData();
+    }, [systemMode]),
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchSystemMode = async () => {
+        const token = await AsyncStorage.getItem('token');
+        try {
+          const responseCurMode = await fetch(
+            'http://localhost:4000/systemmode',
+            {
+              method: 'GET',
+              headers: {
+                Authorization: 'Bearer ' + JSON.parse(token),
+              },
+            },
+          );
+          if (!responseCurMode.ok) {
+            throw new Error('Failed to fetch factor system mode');
+          }
+          const curModeData = await responseCurMode.json();
+          const updatedFactors = factors.map(factor => ({
+            ...factor,
+            // data: statData[factor.name] || [],
+            currentMode: curModeData[factor.name],
+          }));
+          setFactors(updatedFactors);
+          if (Object.values(curModeData).every(factor => factor === 'Auto')) {
+            setSystemMode('Auto');
+          } else {
+            setSystemMode('Manual');
+          }
+          // setDeviceControl(
+          //   deviceControl.map(device => ({
+          //     ...device,
+          //     deviceStt: curModeData[device.name].deviceStt,
+          //   })),
+          // );
+        } catch (err) {
+          console.error(err);
+        }
+      };
+      fetchSystemMode();
+    }, []),
+  );
+
+  const toggleSwitch = async () => {
+    const token = await AsyncStorage.getItem('token');
+
+    const newMode = systemMode === 'Auto' ? 'Manual' : 'Auto';
+    setSystemMode(newMode);
+    if (newMode === 'Auto') {
+      try {
+        const response = await fetch('http://localhost:4000/systemmode', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + JSON.parse(token),
+          },
+          body: JSON.stringify({mode: newMode}),
+        });
+        if (!response.ok) {
+          throw new Error('Failed to update system mode');
+        }
+      } catch (error) {
+        console.error('Error updating system mode:', error);
+        setSystemMode(prev => (prev === 'Auto' ? 'Maanual' : 'Auto'));
+      }
+    }
+  };
+
   return (
     <ScrollView backgroundColor="#F5F6FA">
       <ImageBackground
         source={require('./image/main-bg.png')}
-        style={{height: 250}}>
+        style={{height: 300}}>
         <YStack
           flex={1}
           justifyContent="space-between"
@@ -55,99 +193,34 @@ const HomeScreen = () => {
               style={{width: 40, height: 40}}
             />
           </XStack>
-          <YStack className="flex-col">
+          <YStack>
             <H4 color={'white'}>System mode</H4>
-            <View alignItems="center">
+            <XStack
+              paddingVertical={25}
+              alignSelf="center"
+              justifyContent="space-evenly"
+              width={'100%'}
+              alignItems="center">
+              <Text color={'white'}>Manual</Text>
               <Switch
-                // id={id}
                 size={'$10'}
-                defaultChecked={true}>
+                onCheckedChange={toggleSwitch}
+                checked={systemMode === 'Auto'}>
                 <Switch.Thumb animation="quicker" backgroundColor={'green'} />
               </Switch>
-            </View>
+              <Text color={'white'}>Auto</Text>
+            </XStack>
             <Text color={'white'}>Last modified:</Text>
           </YStack>
         </YStack>
       </ImageBackground>
       <Main paddingHorizontal={25} paddingVertical={10}>
-        <YStack>
-          <H3>Environment factors</H3>
-          <YStack gap={12} paddingTop={10}>
-            <XStack justifyContent="space-between">
-              <Card
-                name={'Humidity'}
-                currentValue={'70%'}
-                icon={<Droplets size={20} />}>
-                <LineGraph
-                  data={[12, 5, 9, 30, 20, 51, 20, 1, 4, 2, 70]}
-                  style={[tw`mb-4`]}
-                  color="rose"
-                  label="views"
-                  stat="120k"
-                />
-              </Card>
-              <Card
-                name={'Light sensitivity'}
-                currentValue={'600 Lux'}
-                icon={<Sun size={20} />}>
-                <LineGraph
-                  data={[12, 5, 9, 30, 20, 51, 20, 1, 4, 2, 70]}
-                  style={[tw`mb-4`]}
-                  color="rose"
-                  label="views"
-                  stat="120k"
-                />
-              </Card>
-            </XStack>
-            <XStack justifyContent="space-between">
-              <Card
-                name={'Soil moisture'}
-                currentValue={'55%'}
-                icon={<Droplet size={20} />}>
-                <LineGraph
-                  data={[12, 5, 9, 30, 20, 51, 20, 1, 4, 2, 70]}
-                  style={[tw`mb-4`]}
-                  color="rose"
-                  label="views"
-                  stat="120k"
-                />
-              </Card>
-              <Card
-                name={'Temperature'}
-                currentValue={'30°C'}
-                icon={<ThermometerSun size={20} />}>
-                <LineGraph
-                  data={[12, 5, 9, 30, 20, 51, 20, 1, 4, 2, 70]}
-                  style={[tw`mb-4`]}
-                  color="rose"
-                  label="views"
-                  stat="120k"
-                />
-              </Card>
-            </XStack>
-          </YStack>
-        </YStack>
-        <YStack paddingVertical={10}>
-          <H4>Device controls</H4>
-          <XStack flexWrap="wrap" justifyContent="space-between" paddingTop={5}>
-            <DeviceControlCard
-              name={'Garden fan'}
-              icon={<Fan color={'white'} size={22} />}
-            />
-            <DeviceControlCard
-              name={'Garden light'}
-              icon={<Lightbulb color={'white'} size={22} />}
-            />
-            <DeviceControlCard
-              name={'Water pump'}
-              icon={<Droplets color={'white'} size={22} />}
-            />
-            <DeviceControlCard
-              name={'Garden roof'}
-              icon={<CloudSun color={'white'} size={22} />}
-            />
-          </XStack>
-        </YStack>
+        <EvironmentFactorsSection factors={factors} isLoading={isLoading} />
+        <DeviceControlSection
+          deviceControl={deviceControl}
+          factors={factors}
+          setDeviceControl={setDeviceControl}
+        />
       </Main>
     </ScrollView>
   );

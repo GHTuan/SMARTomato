@@ -5,15 +5,14 @@ const deviceSchema = new mongoose.Schema({
         type: ObjectId,
         required: true
     },
-    name: {
+    name:{
         type: String,
         required: true
     },
-    status: {
+    state: {
         type: Boolean,
-        required: true,
         default: false
-    },
+    }
 })
 
 mongoose.model("Device",deviceSchema)
