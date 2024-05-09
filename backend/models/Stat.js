@@ -3,7 +3,8 @@ const {ObjectId} = mongoose.Schema.Types
 const statSchema = new mongoose.Schema({
     dtime: {
         type: Date,
-        required: true
+        required: true,
+        default: Date.now
     },
 
     factorID: {

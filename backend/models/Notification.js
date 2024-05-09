@@ -16,6 +16,14 @@ const notifySchema = new mongoose.Schema({
     dtime:{
         type:Date,
         default:Date.now
+    },
+    new:{
+        type:Boolean,
+        default:true
+    },
+    device:{
+        type:String,
+        required:true
     }
 })
 
