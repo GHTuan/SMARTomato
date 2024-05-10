@@ -2,22 +2,41 @@
 // https://aboutreact.com/react-native-login-and-signup/
 
 // Import React and Component
-import React, {useState, createRef} from 'react';
+import React, {useState, createRef, useEffect} from 'react';
 import {View, Text, SafeAreaView, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from 'react-native-vector-icons/Feather';
+import AsyncStorage from '@react-native-community/async-storage';
+import { formatDistanceToNow } from 'date-fns';
+
 
 const NotificationsScreen = () => {
   const [notifications, setNotifications] = useState([
-    { id: 1, message: 'Notification 1' },
-    { id: 2, message: 'Notification 2' },
-    { id: 3, message: 'Notification 3' },
   ]);
-  // const fetchNotifications = () => {
-  // };
-  // useEffect(() => {
-  //   fetchNotifications();
-  // }, []);
+  const fetchNotifications = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      console.log(token)
+      const response = await fetch('http://localhost:4000/notification', {
+        method: 'GET',
+        headers: {
+          'Authorization': "Bearer "+ JSON.parse(token), //
+          'Content-Type': 'application/json',
+        },
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch notifications');
+      }
+      const notifications = await response.json();
+      console.log(notifications)
+      setNotifications(notifications);
+    } catch (error) {
+      console.error('Error fetching notifications:', error.message);
+    }
+  };
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
   const handleClearAllNotifications = () => {
     setNotifications([])
   };
@@ -26,10 +45,16 @@ const NotificationsScreen = () => {
   };
   const renderNotificationItem = ({ item }) => (
     <View style={styles.notificationItem}>
-      <Text style={{fontWeight: '700'}}>{item.message}</Text>
-      <TouchableOpacity onPress={() => handleClearNotification(item.id)}>
-      <Icon name="twitter"/>
-      </TouchableOpacity>
+      <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+        <Text style={{fontWeight: 'bold', color: 'black'}}>{item.title}</Text>
+        <TouchableOpacity onPress={() => handleClearNotification(item._id)}>
+          <Icon name="delete"/>
+        </TouchableOpacity>
+      </View>
+      <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+        <Text style={[styles.notificationContent, {color: '#97A0B0'}]}>{item.content}</Text>
+        <Text style={{color: '#97A0B0'}}>{formatDistanceToNow(new Date(item.dtime))}</Text>
+      </View>
     </View>
   );
   return (
@@ -40,16 +65,17 @@ const NotificationsScreen = () => {
         end={{ x: 1, y: 1 }}
         style={[{height: '25%'}, styles.gradient]}>
           <View style={styles.gradientIcon}>
-            <Icon name="twitter"/>
-            <Icon name="twitter"/>
+            <Icon style={{color: 'white', fontSize: 18}} name="menu"/>
+            <Text style={{color: 'white', fontWeight: 'bold'}}>Notifications</Text>
+            <Icon style={{color: 'white', fontSize: 18}} name="settings"/>
           </View>
         </LinearGradient>
         <View style={styles.overlay}>
-          <FlatList
-            data={notifications}
-            renderItem={renderNotificationItem}
-            keyExtractor={item => item.id.toString()}
-          />
+        <FlatList
+          data={notifications}
+          renderItem={renderNotificationItem}
+          keyExtractor={item => item._id.toString()}
+        />
           {notifications.length > 0 && (
           <TouchableOpacity style={styles.clearAllButton} onPress={handleClearAllNotifications}>
             <Text style={{color: 'black'}}>Clear All</Text>
@@ -75,7 +101,7 @@ const styles = StyleSheet.create({
   gradientIcon: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '70%',
+    width: '80%',
     marginTop: 40,
     marginLeft: 40,
     marginRight: 40
@@ -89,12 +115,16 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   notificationItem: {
-    flexDirection: 'row',
-    padding: 10,
-    margin: 10,
+    width: '90%',
+    marginTop: 10,
+    marginLeft: 10,
     borderBottomWidth: 1,
     borderBottomColor: 'black',
-    justifyContent: 'space-between',
+  },
+  notificationContent: {
+    flex: 1,
+    flexWrap: 'wrap',
+    width: '80%'
   },
   clearAllButton: {
     justifyContent: 'center',

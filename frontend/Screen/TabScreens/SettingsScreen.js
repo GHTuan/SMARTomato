@@ -22,29 +22,29 @@ const SettingsScreen = (navigation) => {
             style={styles.naviStyle}
             activeOpacity={0.5}
             onPress={() => navigation.navigate('LightScreen')}>
-            <Text>Light setting</Text>
-            <Icon name="twitter"/>
+            <Text style={styles.textStyle}>Light setting</Text>
+            <Icon name="chevron-right"/>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.naviStyle2}
             activeOpacity={0.5}
             onPress={() => props.navigation.navigate('HumidityScreen')}>
-            <Text>Humidity setting</Text>
-            <Icon name="twitter"/>
+            <Text style={styles.textStyle}>Humidity setting</Text>
+            <Icon name="chevron-right"/>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.naviStyle2}
             activeOpacity={0.5}
             onPress={() => props.navigation.navigate('MoistureScreen')}>
-            <Text>Soil Moisture setting</Text>
-            <Icon name="twitter"/>
+            <Text style={styles.textStyle}>Soil Moisture setting</Text>
+            <Icon name="chevron-right"/>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.naviStyle2}
             activeOpacity={0.5}
             onPress={() => navigation.navigate('TemperatureScreen')}>
-            <Text>Temperature setting</Text>
-            <Icon name="twitter"/>
+            <Text style={styles.textStyle}>Temperature setting</Text>
+            <Icon name="chevron-right"/>
           </TouchableOpacity>
         </View>
       </View>
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     paddingLeft: 20,
-    paddingRight: 20
+    paddingRight: 20,
   },
   naviStyle2:{
     backgroundColor: 'white',
@@ -87,6 +87,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingLeft: 20,
     paddingRight: 20,
+  },
+  textStyle:{
+    fontWeight: 'bold',
+    color: 'black'
   }
 });
 export default SettingsScreen;
