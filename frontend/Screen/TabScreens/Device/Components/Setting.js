@@ -63,7 +63,7 @@ async function updateThreshold(){
   })
   .then((response) => response.json())
   .then((response) => {
-    console.log(response)
+    // console.log(response)
     // console.log(lowerBound)
     // console.log(upperBound)
     })

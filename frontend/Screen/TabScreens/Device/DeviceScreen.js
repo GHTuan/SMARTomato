@@ -7,9 +7,12 @@ import { TempSetting, SoilSetting, HumiditySetting, LightSetting}  from './Devic
 import { useState } from 'react';
 import { YStack ,ScrollView, Image } from 'tamagui';
 import { ArrowLeft } from '@tamagui/lucide-icons';
+import AsyncStorage from '@react-native-community/async-storage';
 
 const DeviceScreen = (props) => {
   const [deviceSetting,setDeviceSetting] = useState(SoilSetting)
+  const [manualFill,setManualFill] = useState(false)
+  const [automaticFill,setAutomaticFill] = useState(false)
   useMemo(() => {
   if (props.device == "Temperature") {
       setDeviceSetting(TempSetting)
@@ -22,6 +25,71 @@ const DeviceScreen = (props) => {
     }
   },[props.device])
   
+  function updateFill(mode,state){
+    console.log(mode + ", " + state) 
+
+    if (mode == "Manual"){
+      setAutomaticFill(false)
+      if (state == true){
+        setManualFill(true)
+      } else {
+        setManualFill(false)
+      }
+  } else {
+      setAutomaticFill(true)
+      setManualFill(false)
+  }
+  console.log("Manual Fill: " + manualFill + ", automatic fill: " + automaticFill)
+  }
+
+  useEffect(() => {    
+    async function fetchData(){    
+      const token = await AsyncStorage.getItem('token');
+      const api = deviceSetting.api + "/mode"; 
+      fetch(api,{
+          method: 'PUT',
+          headers: {
+              //Header Defination
+              "Content-Type":"application/json",
+              "Authorization":"Bearer "+ JSON.parse(token)
+          },
+          body: JSON.stringify({
+              reqdevice: deviceSetting.device
+          })
+      })
+      .then((response) => response.json())
+      .then((response) => {
+          updateFill(response.mode,response.state)
+      })
+    }
+    fetchData();
+}
+    ,[props.device]);
+
+    const updateState = async (mode,state) => {
+      console.log(mode)
+      console.log(state)
+      updateFill(mode,state)
+      const token = await AsyncStorage.getItem('token');
+      const api = deviceSetting.api + "/mode"
+      await fetch(api,{
+          method: 'POST',
+          headers: {
+              //Header Defination
+              "Content-Type":"application/json",
+              "Authorization":"Bearer "+ JSON.parse(token)
+          },
+          body: JSON.stringify({
+              reqdevice: deviceSetting.device,
+              mode: mode,
+              state: state
+          })
+      })
+      .then((response) => response.json())
+      .then((response) =>{
+          console.log(response)
+      })
+    }
   return (
     <ScrollView>
       <ImageBackground source={require('./image/bg.png')}
@@ -46,11 +114,15 @@ const DeviceScreen = (props) => {
       
       <ManualCard 
         setting = {deviceSetting}
+        fill = {manualFill}
+        update = {updateState}
         >
       </ManualCard>
 
       <AutomaticCard 
         setting = {deviceSetting}
+        fill = {automaticFill}
+        update = {updateState}
         >
       </AutomaticCard>
       

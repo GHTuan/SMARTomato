@@ -7,75 +7,12 @@ import AsyncStorage from '@react-native-community/async-storage';
 
 const AutomaticCard = (props) => {
     
-    const [state,setState] = useState();
-    const [mode,setMode] = useState("Auto");
-    useEffect( () => {    
-        async function fetchData(){    
-            const token = await AsyncStorage.getItem('token');
-            const api = props.setting.api + "/mode"; 
-            fetch(api,{
-                method: 'PUT',
-                headers: {
-                    //Header Defination
-                    "Content-Type":"application/json",
-                    "Authorization":"Bearer "+ JSON.parse(token)
-                },
-                body: JSON.stringify({
-                    reqdevice: props.setting.device
-                })
-            })
-            .then((response) => response.json())
-            .then((response) => {
-                // console.log(response)
-                if (response.mode == "Auto"){
-                    setState(true)
-                } else {
-                    setState(false)
-                }
-            })
-        }
-        fetchData();
-    }
-        ,[]);
-    
-    async function cState(){
-
-        if (state == true){
-
-            setState(false)
-            
-        } else {
-
-            setState(true)
-        }
-    }
-
     async function changeState(){
-        await cState();
-        const token = await AsyncStorage.getItem('token');
-        const api = props.setting.api + "/mode"
-        if (state) { 
-            setMode("Auto")
+        if (props.fill){
+            await props.update("Manual",false);
         } else {
-            setMode("Manual")
+            await props.update("Auto",false);
         }
-        await fetch(api,{
-            method: 'POST',
-            headers: {
-                //Header Defination
-                "Content-Type":"application/json",
-                "Authorization":"Bearer "+ JSON.parse(token)
-            },
-            body: JSON.stringify({
-                reqdevice: props.setting.device,
-                mode: mode,
-                state: false
-            })
-        })
-        .then((response) => response.json())
-        .then((response) =>{
-            console.log(response)
-        })
     }    
 
     return (
@@ -101,7 +38,7 @@ const AutomaticCard = (props) => {
                     
                     <Setting setting = {props.setting} />
 
-                    <Switch checked={state} size={'$3'} onCheckedChange = {() => changeState()}>
+                    <Switch checked={props.fill} size={'$3'} onCheckedChange = {() => changeState()}>
                         <Switch.Thumb animation="quicker" backgroundColor={'green'} />
                     </Switch>
                 

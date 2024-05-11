@@ -5,70 +5,14 @@ import { Hand } from "@tamagui/lucide-icons";
 import AsyncStorage from '@react-native-community/async-storage';
 
 const ManualCard = (props) => {
-    const [state,setState] = useState();
-    const [status,setStatus] = useState();
-    useEffect( () => {    
-        async function fetchData(){    
-            const token = await AsyncStorage.getItem('token');
-            const api = props.setting.api + "/mode"; 
-            fetch(api,{
-                method: 'PUT',
-                headers: {
-                    //Header Defination
-                    "Content-Type":"application/json",
-                    "Authorization":"Bearer "+ JSON.parse(token)
-                },
-                body: JSON.stringify({
-                    reqdevice: props.setting.device
-                })
-            })
-            .then((response) => response.json())
-            .then((response) => {
-                console.log(response)
-                if (response.mode == "Manual" && response.state == "true"){
-                    setState(true)
-                } else {
-                    setState(false)
-                }
-            })
-        }
-        fetchData();
-    }
-        ,[]);
-    
-    async function cState(){
-        if (state == true){
-            setState(false)
-        } else {
-            setState(true)
-        }
-    }
+
     async function changeState(){
-        await cState();
-        const token = await AsyncStorage.getItem('token');
-        const api = props.setting.api + "/mode"
-        if (state){
-            setStatus(true)
+
+        if (props.fill){
+            await props.update("Manual",false)
         } else {
-            setStatus(false)
+            await props.update("Manual",true)
         }
-        await fetch(api,{
-            method: 'POST',
-            headers: {
-                //Header Defination
-                "Content-Type":"application/json",
-                "Authorization":"Bearer "+ JSON.parse(token)
-            },
-            body: JSON.stringify({
-                reqdevice: props.setting.device,
-                mode: "Manual",
-                state: status
-            })
-        })
-        .then((response) => response.json())
-        .then((response) =>{
-            console.log(response)
-        })
     }  
     return (
         <View style={{ flex:1, alignItems:'center', justifyContent:'center',backgroundColor:'white', width:'100%',height:80,marginBottom:20, borderRadius:10,padding:10}}>
@@ -91,7 +35,7 @@ const ManualCard = (props) => {
                 </Text>
                 </YStack>
             </XStack>
-            <Switch checked={state} size={'$3'} onCheckedChange={() => changeState()}>
+            <Switch checked={props.fill} size={'$3'} onCheckedChange={() => changeState()}>
                 <Switch.Thumb animation="quicker" backgroundColor={'green'} />
             </Switch>
             </XStack>

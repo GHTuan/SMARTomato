@@ -120,31 +120,23 @@ const NotificationsScreenStack = ({navigation}) => {
   );
 };
 
-// const DeviceScreenStack = ({navigation}) => {
-//   return (
-//     <Stack.Navigator
-//       initialRouteName="DeviceScreen"
-//       screenOptions={{
-//         headerStyle: {
-//           backgroundColor: '#307ecc', //Set Header color
-//         },
-//         headerTintColor: '#fff', //Set Header text color
-//         headerTitleStyle: {
-//           fontWeight: 'bold', //Set Header text style
-//         },
-//       }}>
-//       <Stack.Screen
-//         name="DeviceScreen"
+const DeviceScreenStack = ({navigation}) => {
+  return (
+    <Stack.Navigator
+      initialRouteName="DeviceScreen"
+      screenOptions={{headerShown: false}}>
+      <Stack.Screen
+        name="DeviceScreen"
 
-//         options={({ route ,navigation }) => ({
-//           title: 'My Screen',
-//         })}
-//       >
-//          {(props) => <DeviceScreen device={"SoilMoisture"} />}
-//       </Stack.Screen>
-//     </Stack.Navigator>
-//   );
-// };
+        options={({ route ,navigation }) => ({
+          title: 'My Screen',
+        })}
+      >
+         {(props) => <DeviceScreen device={"SoilMoisture"} />}
+      </Stack.Screen>
+    </Stack.Navigator>
+  );
+};
 const {width, height} = Dimensions.get('window');
 
 const TabNavigationRoutes = props => {
@@ -216,11 +208,11 @@ const TabNavigationRoutes = props => {
         options={{tabLabel: 'UserScreen'}}
         component={UserSettingsScreenStack}
       />
-      {/* <Tab.Screen
+      <Tab.Screen
         name="Devive Dummy"
         options={{tabLabel: 'Devive'}}
         component={DeviceScreenStack}
-      /> */}
+      />
     </Tab.Navigator>
     // </View>
   );
