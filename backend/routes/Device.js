@@ -88,7 +88,6 @@ itemRouter.post("/mode", requireLogin, (req, res) => {
                 curmode: mode,
             })
             .then(()=>{
-
                 if (toggleDevice(req.user._id, reqdevice, status,"User")){
                     return res.status(200).json({message:"Change auto to manual with " + status})
                 } else {
@@ -161,8 +160,13 @@ router.post("/mode", requireLogin, (req, res) => {
   if (!reqdevice) {
     return res.status(404).json({ error: "Device not found" });
   }
-
-  toggleDevice(req.user._id, reqdevice, state, "User");
+  var status
+  if (state){
+      status = 1
+  } else {
+      status = 0
+  }
+  toggleDevice(req.user._id, reqdevice, status, "User");
   return res.status(200).json({ message: "Device successfully updated" });
 });
 

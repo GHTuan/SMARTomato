@@ -1,7 +1,9 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import {Circle, Switch, Text, XStack} from 'tamagui';
+import { useNavigation } from '@react-navigation/native';
 
 function DeviceControlCard({name, icon, value, setDeviceControl}) {
+  const navigation = useNavigation()
   const handleDeviceControl = async value => {
     const token = await AsyncStorage.getItem('token');
     try {
@@ -16,7 +18,6 @@ function DeviceControlCard({name, icon, value, setDeviceControl}) {
       if (!response.ok) {
         throw new Error(`Failed to set ${name} devicestt to ${value}`);
       }
-
       setDeviceControl(prev => {
         return prev.map(device =>
           device.name === name ? {...device, state: value} : device,
@@ -26,6 +27,26 @@ function DeviceControlCard({name, icon, value, setDeviceControl}) {
       console.error('Error updating system mode:', error);
     }
   };
+  function navigateToDevice(name){
+    if (name == "fan"){
+      navigation.navigate('DeviceScreen',{
+        device: "Temperature",
+      });
+    } else if (name == "awning"){
+      navigation.navigate('DeviceScreen',{
+        device: "Humidity",
+      });
+    } else if (name == "light"){
+      navigation.navigate('DeviceScreen',{
+        device: "Light",
+      });
+    } else if (name == "pump"){
+      navigation.navigate('DeviceScreen',{
+        device: "SoilMoisture",
+      });
+    }  
+
+  }
   return (
     <XStack
       height={50}
@@ -36,7 +57,7 @@ function DeviceControlCard({name, icon, value, setDeviceControl}) {
       marginVertical={6}
       borderRadius={13}
       padding={7}>
-      <Circle size={33} backgroundColor={'green'}>
+      <Circle size={33} backgroundColor={'green'} onPress={(e) => { navigateToDevice(name)} }>
         {icon}
       </Circle>
       <Text fontSize={11}>{name}</Text>

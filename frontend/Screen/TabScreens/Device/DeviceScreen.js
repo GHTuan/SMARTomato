@@ -9,19 +9,22 @@ import { YStack ,ScrollView, Image } from 'tamagui';
 import { ArrowLeft } from '@tamagui/lucide-icons';
 import AsyncStorage from '@react-native-community/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 
 const DeviceScreen = (props) => {
+  const navigation = useNavigation()
   const [deviceSetting,setDeviceSetting] = useState(SoilSetting)
   const [manualFill,setManualFill] = useState(false)
   const [automaticFill,setAutomaticFill] = useState(false)
+  const {device} = props.route.params;
   useMemo(() => {
-  if (props.device == "Temperature") {
+  if (device == "Temperature") {
       setDeviceSetting(TempSetting)
-    } else if (props.device == "SoilMoisture") {
+    } else if (device == "SoilMoisture") {
       setDeviceSetting(SoilSetting)
-    } else if (props.device == "Humidity") {
+    } else if (device == "Humidity") {
       setDeviceSetting(HumiditySetting)
-    } else if (props.device == "Light") {
+    } else if (device == "Light") {
       setDeviceSetting(LightSetting)
     }
   },[props.device])
@@ -44,7 +47,7 @@ const DeviceScreen = (props) => {
 
   useFocusEffect(
     useCallback(() => {
-    async function fetchData(){    
+    async function fetchData(){
       const token = await AsyncStorage.getItem('token');
       const api = deviceSetting.api + "/mode"; 
       fetch(api,{
@@ -98,7 +101,9 @@ const DeviceScreen = (props) => {
         style={{height: 180, width: '100%', position: 'absolute' }}>
       </ImageBackground>
       <YStack style = {{flex:1,color:'white',alignItems:'center' ,justifyContent:'space-between',flexDirection:'row', margin: 20, marginBottom:10}}>
-        <ArrowLeft color={'white'} size={'$2'}></ArrowLeft>
+        <ArrowLeft color={'white'} size={'$2'} onPress={(e) => {
+          navigation.goBack()
+        }}/>
         <Text style = {{fontWeight:'bold',fontSize:18}}
         onPress={()=> {props.goBack}}
         >

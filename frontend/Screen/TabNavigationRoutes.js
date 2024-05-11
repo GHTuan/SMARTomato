@@ -37,6 +37,12 @@ const HomeScreenStack = ({navigation}) => {
         component={HomeScreen}
         options={{headerShown: false}}
       />
+      <Stack.Screen
+        name="DeviceScreen"
+        component={DeviceScreen}
+        initialParams={{device:"Temperature"}}
+        options={{headerShown: false}}
+      />
     </Stack.Navigator>
   );
 };
@@ -120,23 +126,6 @@ const NotificationsScreenStack = ({navigation}) => {
   );
 };
 
-const DeviceScreenStack = ({navigation}) => {
-  return (
-    <Stack.Navigator
-      initialRouteName="DeviceScreen"
-      screenOptions={{headerShown: false}}>
-      <Stack.Screen
-        name="DeviceScreen"
-
-        options={({ route ,navigation }) => ({
-          title: 'My Screen',
-        })}
-      >
-         {(props) => <DeviceScreen device={"SoilMoisture"} />}
-      </Stack.Screen>
-    </Stack.Navigator>
-  );
-};
 const {width, height} = Dimensions.get('window');
 
 const TabNavigationRoutes = props => {
@@ -206,15 +195,13 @@ const TabNavigationRoutes = props => {
       <Tab.Screen
         name="User"
         options={{tabLabel: 'UserScreen'}}
-        component={UserSettingsScreenStack}
+        component={UserSettingsScreenStack} 
       />
-      <Tab.Screen
-        name="Devive Dummy"
-        options={{tabLabel: 'Devive'}}
-        component={DeviceScreenStack}
-      />
+      
     </Tab.Navigator>
     // </View>
+    
+    
   );
 };
 

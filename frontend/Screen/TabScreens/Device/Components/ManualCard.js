@@ -31,7 +31,7 @@ const ManualCard = (props) => {
                 <YStack style={{flex:1, marginLeft:10}}>
                     <Text fontWeight={"bold"}>  Manual Mode</Text>
                 <Text color={'$black025'} fontSize={11} marginLeft={6} marginTop={5}>
-                    ON/OFF
+                    ON/OFF of {props.setting.device}
                 </Text>
                 </YStack>
             </XStack>
