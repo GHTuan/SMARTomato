@@ -9,6 +9,7 @@ const soilFactor = require("../middleware/soilFactor");
 const lightFactor = require("../middleware/lightFactor");
 const Factor = mongoose.model("Factor");
 const Device = mongoose.model("Device");
+const Stat = mongoose.model("Stat");
 
 const { refreshDevice, toggleDevice } = require("../internal/dataFlow");
 
@@ -48,78 +49,81 @@ itemRouter.put("/mode", requireLogin, async (req, res) => {
 });
 
 itemRouter.post("/mode", requireLogin, (req, res) => {
-  const { mode, devicestt } = req.body;
-  ///
-  if (mode == "Auto") {
-    if (req.factor.curmode == "Auto") {
-      //same auto settings
-      return res.status(200).json({ message: "The same settings" });
-    } else {
-      //change from manual to auto
-      Factor.findByIdAndUpdate(req.factor._id, {
-        curmode: mode,
-        devicestt: devicestt,
-      }).then(() => {
-        return res.status(200).json({ message: "Change manual to auto" });
-      });
+  const {mode, reqdevice, state} = req.body
+    //
+    if (mode == 'Auto') { 
+        if (req.factor.curmode == 'Auto'){
+            //same auto settings
+            return res.status(200).json({message: "The same settings"})
+        } else {
+            //change from manual to auto
+            Factor.findByIdAndUpdate(req.factor._id,{
+                curmode: mode
+            })
+            .then(()=>{
+                return res.status(200).json({message:"Change manual to auto"})
+          })
+        }
     }
-  }
-  if (mode == "Manual") {
-    if (req.factor.curmode == "Manual") {
-      //same manual settings
-      //check devicestt
-      if (req.factor.devicestt == devicestt) {
-        return res.status(200).json({ message: "The same settings" });
-      } else {
-        Factor.findByIdAndUpdate(req.factor._id, {
-          curmode: mode,
-          devicestt: devicestt,
-        }).then(() => {
-          toggleDevice(req.factor._id, devicestt, "User");
-          return res
-            .status(200)
-            .json({ message: "Change manual to manual with " + devicestt });
-        });
-      }
-    } else {
-      //change from auto to manual with devicestt
-      Factor.findByIdAndUpdate(req.factor._id, {
-        curmode: mode,
-        devicestt: devicestt,
-      }).then(() => {
-        toggleDevice(req.factor._id, devicestt, "User");
-        return res
-          .status(200)
-          .json({ message: "Change manual to manual with " + devicestt });
-      });
+    if (mode == "Manual"){
+        var status
+        if (state){
+            status = 1
+        } else {
+            status = 0
+        }
+        if (req.factor.curmode == "Manual"){
+            //same manual settings
+                // console.log(req.factor.devicestt)
+                // console.log(devicestt)
+
+            if (toggleDevice(req.user._id,reqdevice, status,"User")){
+                return res.status(200).json({message:"Change manual to manual with " + status})
+            } else {
+                return res.status(200).json({message:"The same setting"})
+            }
+        } else {
+            //change from auto to manual with devicestt
+            Factor.findByIdAndUpdate(req.factor._id,{
+                curmode: mode,
+            })
+            .then(()=>{
+                if (toggleDevice(req.user._id, reqdevice, status,"User")){
+                    return res.status(200).json({message:"Change auto to manual with " + status})
+                } else {
+                    return res.status(200).json({message:"The same setting"})
+                }
+            })
+        }
     }
-  }
-  //More log needed for switching modes
-});
+    // More log needed for switching modes
+    // TODO
+})
 
 itemRouter.get("/current", requireLogin, async (req, res) => {
-  // Stat.findById(req.factor._id, {} ,{ sort: { 'created_at' : 1 } })
-  // .then((stat) => {
-  //     console.log(stat);
-  //     return res.status(200).json({value: stat.value})
-  // })
+  Stat.find({factorID: req.factor._id}, {} ,{ sort: { 'dtime' : -1 } })
+  .limit(1)
+  .then((stat) => {
+      // console.log(stat);
+      return res.status(200).json({value: stat[0].value})
+  })
   // it right tho :))
+  // const data = await refreshDevice(req.factor._id);
+
+  // if (!data) {
+  //   return res.status(500).json({ error: "Internal Server Error" });
+  // }
+
+  // res.status(200).json({ value: data });
+});
+
+itemRouter.post("/refresh", requireLogin, async (req, res) => {
   const data = await refreshDevice(req.factor._id);
 
   if (!data) {
     return res.status(500).json({ error: "Internal Server Error" });
   }
-
-  res.status(200).json({ value: data });
-});
-
-itemRouter.post("/refresh", requireLogin, async (req, res) => {
-  const data = await refreshDevice(req.user._id);
-
-  if (!data) {
-    return res.status(500).json({ error: "Internal Server Error" });
-  }
-  res.json({ data: data });
+  res.json({ value: data });
 });
 
 itemRouter.get("/threshold", (req, res) => {
@@ -156,8 +160,13 @@ router.post("/mode", requireLogin, (req, res) => {
   if (!reqdevice) {
     return res.status(404).json({ error: "Device not found" });
   }
-
-  toggleDevice(req.user._id, reqdevice, state, "User");
+  var status
+  if (state){
+      status = 1
+  } else {
+      status = 0
+  }
+  toggleDevice(req.user._id, reqdevice, status, "User");
   return res.status(200).json({ message: "Device successfully updated" });
 });
 

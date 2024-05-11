@@ -10,7 +10,6 @@ const {fetchData, controlDevice} = require('./../models/Adafruit')
 const { PureComponent } = require('react')
 
 async function toggleDevice(userID,feedName,value,by) {
-    
     if (feedName != "fan" && feedName != "awning" && feedName != "pump" && feedName != "light"){
         console.log("Wrong device")
         return false;
@@ -54,7 +53,11 @@ async function toggleDevice(userID,feedName,value,by) {
 // Gọi fetchData với các feedName cần lấy dữ liệu
 async function refreshDevice(factorID){
     const result = await Factor.findById(factorID)
-   
+    if (!result) {
+        console.log("Can't not find factor")
+        return
+    }
+    var data = 0;
     var data = 0;
     if (result.name == "Temperature"){ 
         data = await fetchData("temperature-sensor");
@@ -68,7 +71,7 @@ async function refreshDevice(factorID){
     if (result.name == "Moisture"){ 
         data = await fetchData("soil-moisture-sensor");
     }
-    console.log("FetchData "+ result.name +" function completed: " + data);
+    // console.log("FetchData "+ result.name +" function completed: " + data);
     if (!data){
         console.log("Fetch failed: " + data);
         return
@@ -78,12 +81,12 @@ async function refreshDevice(factorID){
         // Create stat 
         // console.log("Create new stat")
 
-        // const newStat = new Stat({
-        //     factorID: factorID,
-        //     value: data,
-        //     unit: "Unit"
-        // })
-        // newStat.save();
+        const newStat = new Stat({
+            factorID: factorID,
+            value: data,
+            unit: "Unit"
+        })
+        newStat.save();
 
         // Check auto
         if (result.curmode == "Auto"){
@@ -156,10 +159,23 @@ async function refreshDevice(factorID){
     
 }
 
-function createNewNotification(userID,title,content,device){
-    // TODO
-    
-
+async function createNewNotification(userID,title,content,device){
+    const result = await Notification.findOne({userID:userID,device:device,new:true})
+    if (!result){
+        const newNoti = await new Notification({
+            userID:userID,
+            title:title,
+            content:content,
+            device:device,
+            new:true
+        })
+        newNoti.save()
+        // console.log("New notification created")
+        return;
+    } else {
+        // console.log("Notification for this device has already been exist")
+        return;
+    }
 }
 
 module.exports = {refreshDevice, toggleDevice}

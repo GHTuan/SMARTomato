@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo,useCallback } from 'react';
 import {View, Text, SafeAreaView, ImageBackground} from 'react-native';
 import DisplayCard from './Components/DisplayCard';
 import AutomaticCard from './Components/AutomaticCard';
@@ -7,28 +7,103 @@ import { TempSetting, SoilSetting, HumiditySetting, LightSetting}  from './Devic
 import { useState } from 'react';
 import { YStack ,ScrollView, Image } from 'tamagui';
 import { ArrowLeft } from '@tamagui/lucide-icons';
+import AsyncStorage from '@react-native-community/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 
 const DeviceScreen = (props) => {
+  const navigation = useNavigation()
   const [deviceSetting,setDeviceSetting] = useState(SoilSetting)
+  const [manualFill,setManualFill] = useState(false)
+  const [automaticFill,setAutomaticFill] = useState(false)
+  const {device} = props.route.params;
   useMemo(() => {
-  if (props.device == "Temperature") {
+  if (device == "Temperature") {
       setDeviceSetting(TempSetting)
-    } else if (props.device == "SoilMoisture") {
+    } else if (device == "SoilMoisture") {
       setDeviceSetting(SoilSetting)
-    } else if (props.device == "Humidity") {
+    } else if (device == "Humidity") {
       setDeviceSetting(HumiditySetting)
-    } else if (props.device == "Light") {
+    } else if (device == "Light") {
       setDeviceSetting(LightSetting)
     }
   },[props.device])
   
+  function updateFill(mode,state){
+
+    if (mode == "Manual"){
+      setAutomaticFill(false)
+      if (state == true){
+        setManualFill(true)
+      } else {
+        setManualFill(false)
+      }
+  } else {
+      setAutomaticFill(true)
+      setManualFill(false)
+  }
+  // console.log("Manual Fill: " + manualFill + ", automatic fill: " + automaticFill)
+  }
+
+  useFocusEffect(
+    useCallback(() => {
+    async function fetchData(){
+      const token = await AsyncStorage.getItem('token');
+      const api = deviceSetting.api + "/mode"; 
+      fetch(api,{
+          method: 'PUT',
+          headers: {
+              //Header Defination
+              "Content-Type":"application/json",
+              "Authorization":"Bearer "+ JSON.parse(token)
+          },
+          body: JSON.stringify({
+              reqdevice: deviceSetting.device
+          })
+      })
+      .then((response) => response.json())
+      .then((response) => {
+          updateFill(response.mode,response.state)
+      })
+    }
+    fetchData();
+}
+    ,[props]),
+  )
+
+    const updateState = async (mode,state) => {
+      // console.log(mode)
+      // console.log(state)
+      updateFill(mode,state)
+      const token = await AsyncStorage.getItem('token');
+      const api = deviceSetting.api + "/mode"
+      await fetch(api,{
+          method: 'POST',
+          headers: {
+              //Header Defination
+              "Content-Type":"application/json",
+              "Authorization":"Bearer "+ JSON.parse(token)
+          },
+          body: JSON.stringify({
+              reqdevice: deviceSetting.device,
+              mode: mode,
+              state: state
+          })
+      })
+      .then((response) => response.json())
+      .then((response) =>{
+          // console.log(response)
+      })
+    }
   return (
     <ScrollView>
       <ImageBackground source={require('./image/bg.png')}
         style={{height: 180, width: '100%', position: 'absolute' }}>
       </ImageBackground>
       <YStack style = {{flex:1,color:'white',alignItems:'center' ,justifyContent:'space-between',flexDirection:'row', margin: 20, marginBottom:10}}>
-        <ArrowLeft color={'white'} size={'$2'}></ArrowLeft>
+        <ArrowLeft color={'white'} size={'$2'} onPress={(e) => {
+          navigation.goBack()
+        }}/>
         <Text style = {{fontWeight:'bold',fontSize:18}}
         onPress={()=> {props.goBack}}
         >
@@ -46,11 +121,15 @@ const DeviceScreen = (props) => {
       
       <ManualCard 
         setting = {deviceSetting}
+        fill = {manualFill}
+        update = {updateState}
         >
       </ManualCard>
 
       <AutomaticCard 
         setting = {deviceSetting}
+        fill = {automaticFill}
+        update = {updateState}
         >
       </AutomaticCard>
       
