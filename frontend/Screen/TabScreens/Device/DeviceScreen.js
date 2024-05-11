@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo,useCallback } from 'react';
 import {View, Text, SafeAreaView, ImageBackground} from 'react-native';
 import DisplayCard from './Components/DisplayCard';
 import AutomaticCard from './Components/AutomaticCard';
@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { YStack ,ScrollView, Image } from 'tamagui';
 import { ArrowLeft } from '@tamagui/lucide-icons';
 import AsyncStorage from '@react-native-community/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
 
 const DeviceScreen = (props) => {
   const [deviceSetting,setDeviceSetting] = useState(SoilSetting)
@@ -26,7 +27,6 @@ const DeviceScreen = (props) => {
   },[props.device])
   
   function updateFill(mode,state){
-    console.log(mode + ", " + state) 
 
     if (mode == "Manual"){
       setAutomaticFill(false)
@@ -39,10 +39,11 @@ const DeviceScreen = (props) => {
       setAutomaticFill(true)
       setManualFill(false)
   }
-  console.log("Manual Fill: " + manualFill + ", automatic fill: " + automaticFill)
+  // console.log("Manual Fill: " + manualFill + ", automatic fill: " + automaticFill)
   }
 
-  useEffect(() => {    
+  useFocusEffect(
+    useCallback(() => {
     async function fetchData(){    
       const token = await AsyncStorage.getItem('token');
       const api = deviceSetting.api + "/mode"; 
@@ -64,11 +65,12 @@ const DeviceScreen = (props) => {
     }
     fetchData();
 }
-    ,[props.device]);
+    ,[props]),
+  )
 
     const updateState = async (mode,state) => {
-      console.log(mode)
-      console.log(state)
+      // console.log(mode)
+      // console.log(state)
       updateFill(mode,state)
       const token = await AsyncStorage.getItem('token');
       const api = deviceSetting.api + "/mode"
@@ -87,7 +89,7 @@ const DeviceScreen = (props) => {
       })
       .then((response) => response.json())
       .then((response) =>{
-          console.log(response)
+          // console.log(response)
       })
     }
   return (

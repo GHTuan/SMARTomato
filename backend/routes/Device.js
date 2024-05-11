@@ -9,6 +9,7 @@ const soilFactor = require("../middleware/soilFactor");
 const lightFactor = require("../middleware/lightFactor");
 const Factor = mongoose.model("Factor");
 const Device = mongoose.model("Device");
+const Stat = mongoose.model("Stat");
 
 const { refreshDevice, toggleDevice } = require("../internal/dataFlow");
 
@@ -101,19 +102,20 @@ itemRouter.post("/mode", requireLogin, (req, res) => {
 })
 
 itemRouter.get("/current", requireLogin, async (req, res) => {
-  // Stat.findById(req.factor._id, {} ,{ sort: { 'created_at' : 1 } })
-  // .then((stat) => {
-  //     console.log(stat);
-  //     return res.status(200).json({value: stat.value})
-  // })
+  Stat.find({factorID: req.factor._id}, {} ,{ sort: { 'dtime' : -1 } })
+  .limit(1)
+  .then((stat) => {
+      // console.log(stat);
+      return res.status(200).json({value: stat[0].value})
+  })
   // it right tho :))
-  const data = await refreshDevice(req.factor._id);
+  // const data = await refreshDevice(req.factor._id);
 
-  if (!data) {
-    return res.status(500).json({ error: "Internal Server Error" });
-  }
+  // if (!data) {
+  //   return res.status(500).json({ error: "Internal Server Error" });
+  // }
 
-  res.status(200).json({ value: data });
+  // res.status(200).json({ value: data });
 });
 
 itemRouter.post("/refresh", requireLogin, async (req, res) => {
@@ -122,7 +124,7 @@ itemRouter.post("/refresh", requireLogin, async (req, res) => {
   if (!data) {
     return res.status(500).json({ error: "Internal Server Error" });
   }
-  res.json({ data: data });
+  res.json({ value: data });
 });
 
 itemRouter.get("/threshold", (req, res) => {

@@ -81,12 +81,12 @@ async function refreshDevice(factorID){
         // Create stat 
         // console.log("Create new stat")
 
-        // const newStat = new Stat({
-        //     factorID: factorID,
-        //     value: data,
-        //     unit: "Unit"
-        // })
-        // newStat.save();
+        const newStat = new Stat({
+            factorID: factorID,
+            value: data,
+            unit: "Unit"
+        })
+        newStat.save();
 
         // Check auto
         if (result.curmode == "Auto"){
