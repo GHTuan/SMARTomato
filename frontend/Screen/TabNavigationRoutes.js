@@ -15,8 +15,8 @@ import {
 import HomeScreen from './TabScreens/Home/HomeScreen';
 import SettingsScreen from './TabScreens/SettingsScreen';
 import UserSettingsScreen from './TabScreens/UserSetting/UserSettingsScreen';
-import StatisticsScreen from './TabScreens/StatisticsScreen';
-import NotificationsScreen from './TabScreens/NotificationsScreen';
+import StatisticsScreen from './TabScreens/StatisticScreen/StatisticsScreen';
+import NotificationsScreen from './TabScreens/NotiScreen/NotificationsScreen';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import DeviceScreen from './TabScreens/Device/DeviceScreen';
 
