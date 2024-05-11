@@ -60,7 +60,7 @@ function DeviceControlCard({name, icon, value, setDeviceControl}) {
       <Circle size={33} backgroundColor={'green'} onPress={(e) => { navigateToDevice(name)} }>
         {icon}
       </Circle>
-      <Text fontSize={11}>{name}</Text>
+      <Text fontSize={11}>{name[0].toUpperCase() + name.slice(1)}</Text>
       <Switch checked={value} size={'$3'} onCheckedChange={handleDeviceControl}>
         <Switch.Thumb animation="quicker" backgroundColor={'green'} />
       </Switch>

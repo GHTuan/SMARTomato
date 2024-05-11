@@ -20,6 +20,20 @@ function EvironmentFactorsSection({factors, isLoading}) {
         return null;
     }
   };
+  const getColor = name => {
+    switch (name) {
+      case 'Humidity':
+        return 'blue';
+      case 'Light':
+        return 'orange';
+      case 'Moisture':
+        return 'green';
+      case 'Temperature':
+        return 'red';
+      default:
+        return null;
+    }
+  };
 
   return (
     <YStack>
@@ -37,7 +51,7 @@ function EvironmentFactorsSection({factors, isLoading}) {
             currentValue={`${factor.data.slice(-1)} ${factor.unit}`}
             currentMode={factor.currentMode}
             icon={getIcon(factor.name)}>
-            <LineGraph data={factor.data} style={[tw`mb-4`]} color="rose" />
+            <LineGraph data={factor.data} style={[tw`mb-4`]} color="red" />
           </Card>
         ))}
       </XStack>

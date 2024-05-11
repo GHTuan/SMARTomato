@@ -56,6 +56,7 @@ function DeviceControlSection({deviceControl, setDeviceControl}) {
           // }))
           .map(device => (
             <DeviceControlCard
+              key={device.name}
               name={device.name}
               icon={getIcon(device.name)}
               // curMode={device.curMode}

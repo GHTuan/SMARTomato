@@ -57,7 +57,7 @@ function ChangeUserInfo(props) {
               .filter(key => key !== 'password')
               .map(key => (
                 <YStack key={key}>
-                  <Label size={15}>{key}</Label>
+                  <Label size={15}>{key[0].toUpperCase() + key.slice(1)}</Label>
                   <Input
                     // placeholder="Enter new password"
                     value={newUserInfo[key]}

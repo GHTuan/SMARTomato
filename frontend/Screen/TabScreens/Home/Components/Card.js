@@ -13,7 +13,7 @@ function Card({name, currentValue, children, icon, currentMode, isLoading}) {
       padding={10}
       backgroundColor={'white'}>
       {isLoading ? (
-        <ActivityIndicator color={'red'} />
+        <ActivityIndicator color={'green'} />
       ) : (
         <View justifyContent="space-between">
           <XStack justifyContent="space-between">
