@@ -187,11 +187,11 @@ const TabNavigationRoutes = props => {
         options={{tabLabel: 'Home Screen'}}
         component={HomeScreenStack}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name="Settings"
         options={{tabLabel: 'Settings Screen'}}
         component={SettingScreenStack}
-      />
+      /> */}
       <Tab.Screen
         name="User"
         options={{tabLabel: 'UserScreen'}}
