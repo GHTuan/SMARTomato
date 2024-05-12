@@ -102,10 +102,9 @@ const DeviceScreen = (props) => {
       </ImageBackground>
       <YStack style = {{flex:1,color:'white',alignItems:'center' ,justifyContent:'space-between',flexDirection:'row', margin: 20, marginBottom:10}}>
         <ArrowLeft color={'white'} size={'$2'} onPress={(e) => {
-          navigation.goBack()
+          navigation.navigate('HomeScreen')
         }}/>
         <Text style = {{fontWeight:'bold',fontSize:18}}
-        onPress={()=> {props.goBack}}
         >
         {deviceSetting.title} Settings
         </Text>
