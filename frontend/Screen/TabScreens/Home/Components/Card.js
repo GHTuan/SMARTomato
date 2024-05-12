@@ -13,12 +13,12 @@ function Card({name, currentValue, children, icon, currentMode, isLoading}) {
       padding={10}
       backgroundColor={'white'}>
       {isLoading ? (
-        <ActivityIndicator color={'red'} />
+        <ActivityIndicator color={'#35C354'} />
       ) : (
         <View justifyContent="space-between">
           <XStack justifyContent="space-between">
             <Text>{currentValue}</Text>
-            <Button color={'green'} fontSize={10} unstyled={true}>
+            <Button color={'#35C354'} fontSize={10} unstyled={true}>
               Remeasure
             </Button>
           </XStack>

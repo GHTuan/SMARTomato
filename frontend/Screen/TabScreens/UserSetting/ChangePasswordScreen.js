@@ -63,10 +63,18 @@ function ChangePassword() {
         Update password
       </H3>
       {Object.keys(input).map(key => (
-        <YStack>
-          <Label size={15}>{key}</Label>
+        <YStack key={key}>
+          <Label size={15}>
+            {
+              ((key = key.replace(/[A-Z]/g, ' $&')),
+              key[0].toUpperCase() + key.slice(1))
+            }
+          </Label>
           <Input
-            placeholder="Current password"
+            placeholder={
+              ((key = key.replace(/[A-Z]/g, ' $&')),
+              key[0].toUpperCase() + key.slice(1))
+            }
             value={input[key]}
             onChangeText={text => setInput(prev => ({...prev, [key]: text}))}
             secureTextEntry
@@ -74,7 +82,7 @@ function ChangePassword() {
         </YStack>
       ))}
       <Button
-        backgroundColor={'green'}
+        backgroundColor={'#35C354'}
         marginTop={30}
         onPress={handleChangePassword}>
         <Text color={'white'}>Done</Text>
