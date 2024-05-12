@@ -82,7 +82,7 @@ function ChangePassword() {
         </YStack>
       ))}
       <Button
-        backgroundColor={'green'}
+        backgroundColor={'#35C354'}
         marginTop={30}
         onPress={handleChangePassword}>
         <Text color={'white'}>Done</Text>

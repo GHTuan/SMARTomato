@@ -45,6 +45,7 @@ function EvironmentFactorsSection({factors, isLoading}) {
         justifyContent="space-between">
         {factors.map(factor => (
           <Card
+            key={factor.name}
             // marginVertical={10}
             isLoading={isLoading}
             name={factor.name}

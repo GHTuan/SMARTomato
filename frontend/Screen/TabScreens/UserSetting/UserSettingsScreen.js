@@ -5,7 +5,7 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import {useFocusEffect} from '@react-navigation/native';
 import React, {useCallback, useEffect, useState} from 'react';
-import {Alert} from 'react-native';
+import {Alert, ImageBackground} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {Button, H3, H5, Separator, Text, View, YStack} from 'tamagui';
 
@@ -47,10 +47,17 @@ const UserSettingsScreen = props => {
 
   return (
     <View
-      backgroundColor={'green'}
+      // backgroundColor={'green'}
       height={150}
       width={'100%'}
       paddingVertical={30}>
+      <ImageBackground
+        source={require('./Image/bg.png')}
+        style={{
+          height: 300,
+          width: '100%',
+          position: 'absolute',
+        }}></ImageBackground>
       <YStack
         alignItems="center"
         // backgroundColor={'white'}
@@ -137,7 +144,7 @@ const UserSettingsScreen = props => {
               {cancelable: false},
             );
           }}
-          backgroundColor="green"
+          backgroundColor="#35C354"
           width={200}>
           <Text color={'white'}>Log out</Text>
         </Button>
