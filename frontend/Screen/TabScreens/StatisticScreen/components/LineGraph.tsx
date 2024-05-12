@@ -17,7 +17,7 @@ const GRAPH_ASPECT_RATIO = 9 / 16;
 
 function* yLabel(props: LineGraphProps) {
   const maxValue = Math.max(...props.data);
-  for (let i = maxValue; i >= 0; i -= maxValue / 5) {
+  for (let i = maxValue; i >= 0; i -= maxValue / 3) {
 
     yield parseInt(i.toString());
   }
@@ -76,7 +76,7 @@ export function LineGraph(props: LineGraphProps) {
           style={[
             tw``,
             {
-              bottom: value,
+              bottom: value / max * graphHeight - 10,
               position: 'absolute', left: 0
             },
 
@@ -84,6 +84,7 @@ export function LineGraph(props: LineGraphProps) {
           numberOfLines={1}
           adjustsFontSizeToFit
           key={value}
+
         >
           {value}
         </Text>
