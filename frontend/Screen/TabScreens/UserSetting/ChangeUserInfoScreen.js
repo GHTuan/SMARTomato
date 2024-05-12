@@ -76,7 +76,7 @@ function ChangeUserInfo(props) {
             </YStack>
           </View>
           <Button
-            backgroundColor={'green'}
+            backgroundColor={'#35C354'}
             marginTop={30}
             onPress={handleChangeUserInfo}>
             <Text color={'white'}>Done</Text>

@@ -40,7 +40,7 @@ const HomeScreenStack = ({navigation}) => {
       <Stack.Screen
         name="DeviceScreen"
         component={DeviceScreen}
-        initialParams={{device:"Temperature"}}
+        initialParams={{device: 'Temperature'}}
         options={{headerShown: false}}
       />
     </Stack.Navigator>
@@ -164,7 +164,7 @@ const TabNavigationRoutes = props => {
           // You can return any component that you like here!
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: 'green',
+        tabBarActiveTintColor: '#35C354',
         tabBarInactiveTintColor: 'gray',
         headerShown: false,
         tabBarShowLabel: false,
@@ -195,13 +195,10 @@ const TabNavigationRoutes = props => {
       <Tab.Screen
         name="User"
         options={{tabLabel: 'UserScreen'}}
-        component={UserSettingsScreenStack} 
+        component={UserSettingsScreenStack}
       />
-      
     </Tab.Navigator>
     // </View>
-    
-    
   );
 };
 

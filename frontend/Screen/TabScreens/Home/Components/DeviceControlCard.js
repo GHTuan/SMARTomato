@@ -1,9 +1,9 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import {Circle, Switch, Text, XStack} from 'tamagui';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 
 function DeviceControlCard({name, icon, value, setDeviceControl}) {
-  const navigation = useNavigation()
+  const navigation = useNavigation();
   const handleDeviceControl = async value => {
     const token = await AsyncStorage.getItem('token');
     try {
@@ -27,25 +27,24 @@ function DeviceControlCard({name, icon, value, setDeviceControl}) {
       console.error('Error updating system mode:', error);
     }
   };
-  function navigateToDevice(name){
-    if (name == "fan"){
-      navigation.navigate('DeviceScreen',{
-        device: "Temperature",
+  function navigateToDevice(name) {
+    if (name == 'fan') {
+      navigation.navigate('DeviceScreen', {
+        device: 'Temperature',
       });
-    } else if (name == "awning"){
-      navigation.navigate('DeviceScreen',{
-        device: "Humidity",
+    } else if (name == 'awning') {
+      navigation.navigate('DeviceScreen', {
+        device: 'Humidity',
       });
-    } else if (name == "light"){
-      navigation.navigate('DeviceScreen',{
-        device: "Light",
+    } else if (name == 'light') {
+      navigation.navigate('DeviceScreen', {
+        device: 'Light',
       });
-    } else if (name == "pump"){
-      navigation.navigate('DeviceScreen',{
-        device: "SoilMoisture",
+    } else if (name == 'pump') {
+      navigation.navigate('DeviceScreen', {
+        device: 'SoilMoisture',
       });
-    }  
-
+    }
   }
   return (
     <XStack
@@ -57,12 +56,17 @@ function DeviceControlCard({name, icon, value, setDeviceControl}) {
       marginVertical={6}
       borderRadius={13}
       padding={7}>
-      <Circle size={33} backgroundColor={'green'} onPress={(e) => { navigateToDevice(name)} }>
+      <Circle
+        size={33}
+        backgroundColor={'#35C354'}
+        onPress={e => {
+          navigateToDevice(name);
+        }}>
         {icon}
       </Circle>
       <Text fontSize={11}>{name[0].toUpperCase() + name.slice(1)}</Text>
       <Switch checked={value} size={'$3'} onCheckedChange={handleDeviceControl}>
-        <Switch.Thumb animation="quicker" backgroundColor={'green'} />
+        <Switch.Thumb animation="quicker" backgroundColor={'#35C354'} />
       </Switch>
     </XStack>
   );

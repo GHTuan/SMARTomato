@@ -100,14 +100,18 @@ const LoginScreen = ({navigation}) => {
         }}>
         <View>
           <KeyboardAvoidingView enabled>
-            <View style={{alignItems: 'center'}}>
+            <View
+              style={{
+                alignItems: 'center',
+                width: '70%',
+                alignSelf: 'center',
+              }}>
               <Image
                 source={require('../Image/aboutreact.png')}
                 style={{
-                  width: '50%',
-                  height: 100,
+                  width: '100%',
                   resizeMode: 'contain',
-                  margin: 30,
+                  marginBottom: 0,
                 }}
               />
             </View>
@@ -116,7 +120,7 @@ const LoginScreen = ({navigation}) => {
                 style={styles.inputStyle}
                 onChangeText={UserEmail => setUserEmail(UserEmail)}
                 placeholder="Enter Email" //dummy@abc.com
-                placeholderTextColor="#8b9cb5"
+                placeholderTextColor="#FFFFFF"
                 autoCapitalize="none"
                 keyboardType="email-address"
                 returnKeyType="next"
@@ -132,7 +136,7 @@ const LoginScreen = ({navigation}) => {
                 style={styles.inputStyle}
                 onChangeText={UserPassword => setUserPassword(UserPassword)}
                 placeholder="Enter Password" //12345
-                placeholderTextColor="#8b9cb5"
+                placeholderTextColor="#FFFFFF"
                 keyboardType="default"
                 ref={passwordInputRef}
                 onSubmitEditing={Keyboard.dismiss}
@@ -168,7 +172,7 @@ const styles = StyleSheet.create({
   mainBody: {
     flex: 1,
     justifyContent: 'center',
-    backgroundColor: '#307ecc',
+    backgroundColor: '#7DE24E',
     alignContent: 'center',
   },
   SectionStyle: {
@@ -180,10 +184,10 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   buttonStyle: {
-    backgroundColor: '#7DE24E',
+    backgroundColor: 'red',
     borderWidth: 0,
     color: '#FFFFFF',
-    borderColor: '#7DE24E',
+    borderColor: 'red',
     height: 40,
     alignItems: 'center',
     borderRadius: 30,
