@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
   mainBody: {
     flex: 1,
     justifyContent: 'center',
-    backgroundColor: '#7DE24E',
+    backgroundColor: '#35C354',
     alignContent: 'center',
   },
   SectionStyle: {

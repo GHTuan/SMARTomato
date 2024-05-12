@@ -17,7 +17,7 @@ import {
 
 import Loader from './Components/Loader';
 
-const RegisterScreen = (props) => {
+const RegisterScreen = props => {
   const [userName, setUserName] = useState('');
   const [userEmail, setUserEmail] = useState('');
   const [userPhoneNo, setUserPhoneNo] = useState('');
@@ -25,10 +25,7 @@ const RegisterScreen = (props) => {
   const [userPassword, setUserPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [errortext, setErrortext] = useState('');
-  const [
-    isRegistraionSuccess,
-    setIsRegistraionSuccess
-  ] = useState(false);
+  const [isRegistraionSuccess, setIsRegistraionSuccess] = useState(false);
 
   const emailInputRef = createRef();
   const phoneNoInputRef = createRef();
@@ -59,37 +56,35 @@ const RegisterScreen = (props) => {
     }
     //Show Loader
     setLoading(true);
-  
+
     fetch('http://localhost:4000/signup', {
       method: 'POST',
       headers: {
         //Header Defination
-        "Content-Type":"application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-          email:userEmail,
-          password:userPassword,
-          name:userName,
-          address:userAddress,
-          phoneno:userPhoneNo
+        email: userEmail,
+        password: userPassword,
+        name: userName,
+        address: userAddress,
+        phoneno: userPhoneNo,
       }),
     })
-      .then((response) => response.json())
-      .then((responseJson) => {
+      .then(response => response.json())
+      .then(responseJson => {
         //Hide Loader
         setLoading(false);
         console.log(responseJson);
         // If server response message same as Data Matched
         if (responseJson.message === 'saved successfully') {
           setIsRegistraionSuccess(true);
-          console.log(
-            'Registration Successful. Please Login to proceed'
-          );
+          console.log('Registration Successful. Please Login to proceed');
         } else {
           setErrortext(responseJson.error);
         }
       })
-      .catch((error) => {
+      .catch(error => {
         //Hide Loader
         setLoading(false);
         console.error(error);
@@ -100,7 +95,7 @@ const RegisterScreen = (props) => {
       <View
         style={{
           flex: 1,
-          backgroundColor: '#307ecc',
+          backgroundColor: '#35C354',
           justifyContent: 'center',
         }}>
         <Image
@@ -108,12 +103,10 @@ const RegisterScreen = (props) => {
           style={{
             height: 150,
             resizeMode: 'contain',
-            alignSelf: 'center'
+            alignSelf: 'center',
           }}
         />
-        <Text style={styles.successTextStyle}>
-          Registration Successful
-        </Text>
+        <Text style={styles.successTextStyle}>Registration Successful</Text>
         <TouchableOpacity
           style={styles.buttonStyle}
           activeOpacity={0.5}
@@ -124,7 +117,7 @@ const RegisterScreen = (props) => {
     );
   }
   return (
-    <View style={{flex: 1, backgroundColor: '#307ecc'}}>
+    <View style={{flex: 1, backgroundColor: '#35C354'}}>
       <Loader loading={loading} />
       <ScrollView
         keyboardShouldPersistTaps="handled"
@@ -147,10 +140,10 @@ const RegisterScreen = (props) => {
           <View style={styles.SectionStyle}>
             <TextInput
               style={styles.inputStyle}
-              onChangeText={(UserName) => setUserName(UserName)}
+              onChangeText={UserName => setUserName(UserName)}
               underlineColorAndroid="#f000"
               placeholder="Enter Name"
-              placeholderTextColor="#8b9cb5"
+              placeholderTextColor="white"
               autoCapitalize="sentences"
               returnKeyType="next"
               onSubmitEditing={() =>
@@ -162,16 +155,15 @@ const RegisterScreen = (props) => {
           <View style={styles.SectionStyle}>
             <TextInput
               style={styles.inputStyle}
-              onChangeText={(UserEmail) => setUserEmail(UserEmail)}
+              onChangeText={UserEmail => setUserEmail(UserEmail)}
               underlineColorAndroid="#f000"
               placeholder="Enter Email"
-              placeholderTextColor="#8b9cb5"
+              placeholderTextColor="white"
               keyboardType="email-address"
               ref={emailInputRef}
               returnKeyType="next"
               onSubmitEditing={() =>
-                passwordInputRef.current &&
-                passwordInputRef.current.focus()
+                passwordInputRef.current && passwordInputRef.current.focus()
               }
               blurOnSubmit={false}
             />
@@ -179,18 +171,15 @@ const RegisterScreen = (props) => {
           <View style={styles.SectionStyle}>
             <TextInput
               style={styles.inputStyle}
-              onChangeText={(UserPassword) =>
-                setUserPassword(UserPassword)
-              }
+              onChangeText={UserPassword => setUserPassword(UserPassword)}
               underlineColorAndroid="#f000"
               placeholder="Enter Password"
-              placeholderTextColor="#8b9cb5"
+              placeholderTextColor="white"
               ref={passwordInputRef}
               returnKeyType="next"
               secureTextEntry={true}
               onSubmitEditing={() =>
-                PhoneNoInputRef.current &&
-                PhoneNoInputRef.current.focus()
+                PhoneNoInputRef.current && PhoneNoInputRef.current.focus()
               }
               blurOnSubmit={false}
             />
@@ -198,16 +187,15 @@ const RegisterScreen = (props) => {
           <View style={styles.SectionStyle}>
             <TextInput
               style={styles.inputStyle}
-              onChangeText={(UserPhoneNo) => setUserPhoneNo(UserPhoneNo)}
+              onChangeText={UserPhoneNo => setUserPhoneNo(UserPhoneNo)}
               underlineColorAndroid="#f000"
               placeholder="Enter Phone Number"
-              placeholderTextColor="#8b9cb5"
+              placeholderTextColor="white"
               keyboardType="numeric"
               ref={phoneNoInputRef}
               returnKeyType="next"
               onSubmitEditing={() =>
-                addressInputRef.current &&
-                addressInputRef.current.focus()
+                addressInputRef.current && addressInputRef.current.focus()
               }
               blurOnSubmit={false}
             />
@@ -215,12 +203,10 @@ const RegisterScreen = (props) => {
           <View style={styles.SectionStyle}>
             <TextInput
               style={styles.inputStyle}
-              onChangeText={(UserAddress) =>
-                setUserAddress(UserAddress)
-              }
+              onChangeText={UserAddress => setUserAddress(UserAddress)}
               underlineColorAndroid="#f000"
               placeholder="Enter Address"
-              placeholderTextColor="#8b9cb5"
+              placeholderTextColor="white"
               autoCapitalize="sentences"
               ref={addressInputRef}
               returnKeyType="next"
@@ -229,9 +215,7 @@ const RegisterScreen = (props) => {
             />
           </View>
           {errortext != '' ? (
-            <Text style={styles.errorTextStyle}>
-              {errortext}
-            </Text>
+            <Text style={styles.errorTextStyle}>{errortext}</Text>
           ) : null}
           <TouchableOpacity
             style={styles.buttonStyle}
@@ -256,10 +240,10 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   buttonStyle: {
-    backgroundColor: '#7DE24E',
+    backgroundColor: 'red',
     borderWidth: 0,
     color: '#FFFFFF',
-    borderColor: '#7DE24E',
+    borderColor: 'red',
     height: 40,
     alignItems: 'center',
     borderRadius: 30,
