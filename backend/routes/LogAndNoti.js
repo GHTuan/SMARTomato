@@ -1,13 +1,23 @@
 const express = require('express')
 const router = express.Router()
 const mongoose = require('mongoose')
-const requireLogin  = require('../middleware/requireLogin')
+const requireLogin = require('../middleware/requireLogin')
 const ActivityLog = mongoose.model('ActivityLog')
 const Notification = mongoose.model('Notification')
 
 router.get('/log', requireLogin, async (req, res) => {
     try {
-        const logs = await ActivityLog.find({ userID: req.user._id });
+        const dat = new Date();
+        dat.setDate(dat.getDate() - 30);
+
+        const logs = await ActivityLog.find({
+            userID: req.user._id,
+            dtime: { $gte: dat }
+        })
+            .sort({ dtime: -1 })
+            .limit(20)
+            .exec();
+
         const extractedLogs = logs.map(log => ({
             content: log.content,
             dtime: log.dtime.toLocaleString('en-US', {
@@ -28,10 +38,19 @@ router.get('/log', requireLogin, async (req, res) => {
 
 
 
-router.get('/notification',requireLogin, async(req, res) => {
+router.get('/notification', requireLogin, async (req, res) => {
     try {
-        
-        const notifications = await Notification.find({ userID: req.user._id });
+        const dat = new Date();
+        dat.setDate(dat.getDate() - 30);
+
+        const notifications = await Notification.find({
+            userID: req.user._id,
+            dtime: { $gte: dat }
+        })
+            .sort({ dtime: -1 })
+            .limit(20)
+            .exec();
+
         const extractedNotifications = notifications.map(noti => ({
             title: noti.title,
             content: noti.content,
@@ -46,7 +65,7 @@ router.get('/notification',requireLogin, async(req, res) => {
             new: noti.new,
             device: noti.device
         }));
-        res.status(200).json(extractedNotifications); 
+        res.status(200).json(extractedNotifications);
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "Internal server error" });
@@ -54,7 +73,7 @@ router.get('/notification',requireLogin, async(req, res) => {
 })
 
 router.post('/notification', requireLogin, (req, res) => {
-    Notification.updateMany({userID: req.user._id}, { $set: { new: false } })
+    Notification.updateMany({ userID: req.user._id, new: true }, { $set: { new: false } })
         .then(() => {
             res.status(200).json({ message: "Notifications updated successfully" });
         })
@@ -65,4 +84,4 @@ router.post('/notification', requireLogin, (req, res) => {
 });
 
 
-module.exports=router
+module.exports = router

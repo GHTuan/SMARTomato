@@ -101,8 +101,8 @@ const StatisticsScreen = () => {
         <Text style={styles.headerText}>Activity Log</Text>
 
         <ScrollView style={styles.body}>
-          {actLog.map((log) =>
-          (<View style={styles.item}>
+          {actLog.map((log, i) =>
+          (<View style={styles.item} key={i}>
             <View width={'60%'} >
               <Text color={'black'}>{log.content}</Text>
             </View>
@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   body: {
-    maxHeight: 250,
+    maxHeight: 300,
   },
 
 
